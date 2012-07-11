@@ -5,6 +5,27 @@ class Time
   AVERAGE_MONTH = 2628000
   AVERAGE_YEAR  = 31540000
   def before(time)
+    if(self.to_i % AVERAGE_MONTH == 0)
+      new_month = time.month - (self.to_i / AVERAGE_MONTH)
+      new_year = time.year
+      while new_month < 1 do
+        new_month += 12
+        new_year -= 1
+      end
+
+      if not(Time.day_exists_in_month?(time.day, new_month, new_year))
+        return Time.new(new_year, new_month, Time.last_day_of_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
+      else
+        return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
+      end
+    elsif(self.to_i % AVERAGE_YEAR == 0)
+      new_year = (self.to_i / AVERAGE_YEAR) + time.year
+      if not(time.leap_day?)
+        return Time.new(new_year, time.month, time.day, time.hour, time.min, time.sec, time.utc_offset)
+      else
+        return Time.new(new_year, time.month + 1, 1, time.hour, time.min, time.sec, time.utc_offset)
+      end
+    end
     Time.at(time.to_i - self.to_i)
   end
 
@@ -21,17 +42,17 @@ class Time
         new_year += 1
       end
 
-      if not Time.day_exists_in_month?(time.day, new_month, new_year)
+      if not(Time.day_exists_in_month?(time.day, new_month, new_year))
         return Time.new(new_year, new_month, Time.last_day_of_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
       else
         return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
       end
     elsif(self.to_i % AVERAGE_YEAR == 0)
       new_year = (self.to_i / AVERAGE_YEAR) + time.year
-      if(time.leap_day?)
-        return Time.new(new_year, time.month + 1, 1, time.hour, time.min, time.sec, time.utc_offset)
-      else
+      if not(time.leap_day?)
         return Time.new(new_year, time.month, time.day, time.hour, time.min, time.sec, time.utc_offset)
+      else
+        return Time.new(new_year, time.month + 1, 1, time.hour, time.min, time.sec, time.utc_offset)
       end
     end
     Time.at(time.to_i + self.to_i)
