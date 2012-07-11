@@ -21,13 +21,18 @@ class Time
         new_year += 1
       end
 
-      if(Time.day_exists_in_month?(time.day, new_month, new_year))
-        return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
-      else
+      if not Time.day_exists_in_month?(time.day, new_month, new_year)
         return Time.new(new_year, new_month, Time.last_day_of_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
+      else
+        return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
       end
     elsif(self.to_i % AVERAGE_YEAR == 0)
-      # year code
+      new_year = (self.to_i / AVERAGE_YEAR) + time.year
+      if(time.leap_day?)
+        return Time.new(new_year, time.month + 1, 1, time.hour, time.min, time.sec, time.utc_offset)
+      else
+        return Time.new(new_year, time.month, time.day, time.hour, time.min, time.sec, time.utc_offset)
+      end
     end
     Time.at(time.to_i + self.to_i)
   end
@@ -53,6 +58,10 @@ class Time
   
   def leap_year?
     Time.leap_year?(self.year)
+  end
+
+  def leap_day?
+    self.month == 2 && self.day == 29
   end
 end
 
