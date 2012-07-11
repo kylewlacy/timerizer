@@ -43,11 +43,19 @@ class Fixnum
 end
 
 class Time
-  def from_now
-    Time.at(self.to_i + Time.now.to_i)
+  def before(time)
+    Time.at(time.to_i - self.to_i)
   end
 
   def ago
-    Time.at(Time.now.to_i - self.to_i)
+    self.before(Time.now)
+  end
+
+  def after(time)
+    Time.at(time.to_i + self.to_i)
+  end
+
+  def from_now
+    self.after(Time.now)
   end
 end
