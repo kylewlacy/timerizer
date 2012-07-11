@@ -32,6 +32,14 @@ class Fixnum
   def years
     Time.at(self * AVERAGE_YEAR)
   end
+
+  alias_method :second,  :seconds
+  alias_method :minute,  :minutes
+  alias_method :hour,    :hours
+  alias_method :day,     :days
+  alias_method :week,    :weeks
+  alias_method :month,   :months
+  alias_method :year,    :years
 end
 
 class Time
