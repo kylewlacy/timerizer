@@ -62,11 +62,11 @@ class Time
     self.after(Time.now)
   end
 
-  def self.day_exists_in_month?(day, month, year = Time.now.year)
+  def self.day_exists_in_month?(day, month, year = Time.at(0).utc.year)
     Time.last_day_of_month(month, year) >= day
   end
 
-  def self.last_day_of_month(month, year = Time.now.year)
+  def self.last_day_of_month(month, year = Time.at(0).utc.year)
     number_of_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     number_of_days[1] = 29 if leap_year?(year)
 
