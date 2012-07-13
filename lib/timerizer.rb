@@ -14,7 +14,7 @@ class Time
       end
 
       if not(Time.day_exists_in_month?(time.day, new_month, new_year))
-        return Time.new(new_year, new_month, Time.last_day_of_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
+        return Time.new(new_year, new_month, Time.days_in_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
       else
         return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
       end
@@ -43,7 +43,7 @@ class Time
       end
 
       if not(Time.day_exists_in_month?(time.day, new_month, new_year))
-        return Time.new(new_year, new_month, Time.last_day_of_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
+        return Time.new(new_year, new_month, Time.days_in_month(new_month, new_year), time.hour, time.min, time.sec, time.utc_offset)
       else
         return Time.new(new_year, new_month, time.day, time.hour, time.min, time.sec, time.utc_offset)
       end
@@ -63,12 +63,11 @@ class Time
   end
 
   def self.day_exists_in_month?(day, month, year = Time.at(0).utc.year)
-    Time.last_day_of_month(month, year) >= day
+    Time.days_in_month(month, year) >= day
   end
 
-  def self.last_day_of_month(month, year = Time.at(0).utc.year)
-    number_of_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    number_of_days[1] = 29 if leap_year?(year)
+  def self.days_in_month(month, year = Time.at(0).utc.year)
+    number_of_days = [31, (not leap_year?(year)) ? 28 : 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
     number_of_days.fetch(month - 1)
   end
