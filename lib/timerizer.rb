@@ -1,9 +1,58 @@
+class RelativeTime
+  @@in_seconds = {
+      :second => 1,
+      :minute => 60,
+      :hour => 3600,
+      :day => 864000,
+      :week => 604800
+  }
+
+  @@in_months = {
+    :month => 1,
+    :year => 12,
+    :decade => 120,
+    :century => 1200,
+    :millenium => 12000
+  }
+
+  def initialize(count = 0, unit = :second)
+    if(@@in_seconds.has_key?(unit))
+      @seconds = count * @@in_seconds.fetch(unit)
+    elsif(@@in_months.has_key?(unit))
+      @months = count * @@in_months.fetch(unit)
+    end
+  end
+end
+
 class Time
   # Since the length of months and years aren't constant,
   # we use the averages. These also act as sort of 'magic
   # numbers' for the relative Time methods
   AVERAGE_MONTH = 2628000
   AVERAGE_YEAR  = 31540000
+
+  add = instance_method(:+)
+  define_method(:+) do |time|
+    if(time.class == RelativeTime)
+      time + self
+    else
+      self.add(time)
+    end
+  end
+
+  subtract = instance_method(:-)
+  define_method(:-) do |time|
+    if(time.class == RelativeTime)
+      time.before(self)
+    else
+      self.subtract(time)
+    end
+  end
+
+  def relative?
+    @relative ||= false
+  end
+
   def before(time)
     if(self.to_i % AVERAGE_MONTH == 0)
       new_month = time.month - (self.to_i / AVERAGE_MONTH)
@@ -75,7 +124,7 @@ class Time
   def self.leap_year?(year)
     (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
   end
-  
+
   def leap_year?
     Time.leap_year?(self.year)
   end
@@ -87,31 +136,31 @@ end
 
 class Fixnum
   def seconds
-    Time.at(self)
+    Time.relative(self)
   end
 
   def minutes
-    Time.at(self * 60)
+    Time.relative(self * 60)
   end
 
   def hours
-    Time.at(self * 3600)
+    Time.relative(self * 3600)
   end
 
   def days
-    Time.at(self * 86400)
+    Time.relative(self * 86400)
   end
 
   def weeks
-    Time.at(self * 604800)
+    Time.relative(self * 604800)
   end
 
   def months
-    Time.at(self * Time::AVERAGE_MONTH)
+    Time.relative(self * Time::AVERAGE_MONTH)
   end
 
   def years
-    Time.at(self * Time::AVERAGE_YEAR)
+    Time.relative(self * Time::AVERAGE_YEAR)
   end
 
   alias_method :second,  :seconds
