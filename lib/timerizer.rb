@@ -87,7 +87,7 @@ class Time
   add = instance_method(:+)
   define_method(:+) do |time|
     if(time.class == RelativeTime)
-      time + self
+      time.after(self)
     else
       add.bind(self).(time)
     end
