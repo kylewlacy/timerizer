@@ -94,8 +94,11 @@ class Time
     Date.new(self.year, self.month, self.day)
   end
 
-  def self.days_in_month(month, year = Time.at(0).utc.year)
-    number_of_days = [31, (not leap_year?(year)) ? 28 : 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+end
+
+class Date
+  def days_in_month(month = self.month)
+    number_of_days = [31, (not self.leap?) ? 28 : 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
     number_of_days.fetch(month - 1)
   end
