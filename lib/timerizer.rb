@@ -37,6 +37,11 @@ class RelativeTime
       new_month += 12
       new_year -= 1
     end
+    if(Date.valid_date?(new_year, new_month, time.day))
+      new_day = time.day
+    else
+      new_day = Date.days_in_month(new_month)
+    end
 
     new_time = Time.new(
       new_year, new_month, time.day,
@@ -52,12 +57,19 @@ class RelativeTime
   def after(time)
     time = time + @seconds
 
-    new_month = time.month + @months
     new_year = time.year
+    new_month = time.month + @months
     while new_month > 12
       new_year += 1
       new_month -= 12
     end
+    if(Date.valid_date?(new_year, new_month, time.day))
+      new_day = time.day
+    else
+      new_month += 1
+      new_day = 1
+    end
+
 
     new_time = Time.new(
       new_year, new_month, time.day,
