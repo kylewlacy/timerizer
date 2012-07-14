@@ -90,10 +90,6 @@ class Time
     end
   end
 
-  def relative?
-    @relative ||= false
-  end
-
   def to_date
     Date.new(self.year, self.month, self.day)
   end
