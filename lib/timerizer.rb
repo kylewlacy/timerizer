@@ -16,11 +16,56 @@ class RelativeTime
   }
 
   def initialize(count = 0, unit = :second)
+    @seconds = 0
+    @months = 0
+
     if(@@in_seconds.has_key?(unit))
       @seconds = count * @@in_seconds.fetch(unit)
     elsif(@@in_months.has_key?(unit))
       @months = count * @@in_months.fetch(unit)
     end
+  end
+
+  def before(time)
+    time = time - @seconds
+
+    new_month = time.month - @months
+    new_year = time.year
+    while new_month < 1
+      new_month += 12
+      new_year -= 1
+    end
+
+    new_time = Time.new(
+      new_year, new_month, time.day,
+      time.hour, time.min, time.sec
+    )
+    Time.at(new_time.to_i, time.nsec/1000)
+  end
+
+  def ago
+    self.before(Time.now)
+  end
+
+  def after(time)
+    time = time + @seconds
+
+    new_month = time.month + @months
+    new_year = time.year
+    while new_month > 12
+      new_year += 1
+      new_month -= 12
+    end
+
+    new_time = Time.new(
+      new_year, new_month, time.day,
+      time.hour, time.min, time.sec
+    )
+    Time.at(new_time.to_i, time.nsec/1000.0)
+  end
+
+  def from_now
+    self.after(Time.now)
   end
 end
 
@@ -36,7 +81,7 @@ class Time
     if(time.class == RelativeTime)
       time + self
     else
-      self.add(time)
+      add.bind(self).(time)
     end
   end
 
@@ -45,7 +90,7 @@ class Time
     if(time.class == RelativeTime)
       time.before(self)
     else
-      self.subtract(time)
+      subtract.bind(self).(time)
     end
   end
 
