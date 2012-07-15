@@ -5,7 +5,7 @@ class RelativeTime
       :second => 1,
       :minute => 60,
       :hour => 3600,
-      :day => 864000,
+      :day => 86400,
       :week => 604800
   }
 
