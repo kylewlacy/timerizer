@@ -18,8 +18,8 @@ class RelativeTime
   }
 
   @@average_seconds = {
-    :month => 2628000,
-    :year => 31540000
+    :month => 2629746,
+    :year => 31556952
   }
 
   def initialize(count = 0, unit = :second)
@@ -110,14 +110,34 @@ class RelativeTime
     end
   end
 
+  def unaverage
+    return self unless self.in_seconds > 0
+
+    months = self.in_seconds / @@average_seconds[:month]
+    remainder = months.months.average.in_seconds
+    months.months (@seconds - remainder).seconds
+  end
+
+  def unaverage!
+    unaveraged = self.unaverage
+    @seconds = unaveraged.in_seconds
+    @months = unaveraged.in_months
+    self
+  end
+
+  def average
+    return self.unaverage unless self.in_months > 0
+    seconds = @@average_seconds[:month] * self.in_months
+    seconds += @seconds
+    
+    seconds.seconds
+  end
+
   def average!
-    years = self.in_years
-    months = self.in_months - years.years.in_months
-    @seconds += (
-      (@@average_seconds[:month] * months) +
-      (@@average_seconds[:year] * years)
-    )
-    @months = 0
+    averaged = self.average
+    @seconds = average.in_seconds
+    @months = average.in_months
+    self
   end
 
   def +(time)
