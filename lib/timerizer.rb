@@ -152,6 +152,24 @@ class RelativeTime
   def seconds
     self.in_seconds - self.in_minutes.minutes.in_seconds
   end
+
+  def to_s
+    times = {}
+
+
+    get_time = Proc.new do |hash|
+      hash.each do |unit, value|
+        time = self.respond_to?("#{unit}s") ? self.send("#{unit}s") : 0
+        times[unit] = time if time > 0
+      end
+    end
+
+    [@@in_months, @@in_seconds].each &get_time
+
+    times.map do |unit, time|
+      "#{time} #{unit}#{'s' if time > 1}"
+    end.reverse.join(', ')
+  end
 end
 
 class Time
