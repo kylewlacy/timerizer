@@ -87,20 +87,28 @@ class RelativeTime
     self.after(Time.now)
   end
 
-  def in_years
-    @months / @@in_months[:year]
-  end
+  [@@in_months, @@in_seconds].each do |units|
+    units.keys.each_with_index do |unit, index|
+      in_method = "in_#{unit}s"
+      count_method = "#{unit}s"
+      superior_unit = units.keys[index+1]
 
-  def years
-    self.in_years
-  end
+      define_method(in_method) do
+        count = self.instance_variable_get("@#{units.keys[0]}s")
+        count / units[unit]
+      end
 
-  def in_months
-    @months / @@in_months[:month]
-  end
+      define_method(count_method) do
+        in_superior = "in_#{superior_unit}s"
 
-  def months
-    self.in_months - self.in_years.years.in_months
+        time = self.send(in_method)
+        puts units.length > index+1
+        if(units.length > index+1)
+          time -= self.send(in_superior).send(superior_unit).send(in_method)
+        end
+        time
+      end
+    end
   end
 
   def average!
@@ -113,58 +121,15 @@ class RelativeTime
     @months = 0
   end
 
-  def in_weeks
-    @seconds / @@in_seconds[:week]
-  end
-
-  def weeks
-    self.in_weeks
-  end
-
-  def in_days
-    @seconds / @@in_seconds[:day]
-  end
-
-  def days
-    self.in_days - self.in_weeks.weeks.in_days
-  end
-
-  def in_hours
-    @seconds / @@in_seconds[:hour]
-  end
-
-  def hours
-    self.in_hours - self.in_days.days.in_hours
-  end
-
-  def in_minutes
-    @seconds / @@in_seconds[:minute]
-  end
-
-  def minutes
-    self.in_minutes - self.in_hours.hours.in_minutes
-  end
-
-  def in_seconds
-    @seconds / @@in_seconds[:second]
-  end
-
-  def seconds
-    self.in_seconds - self.in_minutes.minutes.in_seconds
-  end
-
   def to_s
     times = {}
 
-
-    get_time = Proc.new do |hash|
+    [@@in_months, @@in_seconds].each do |hash|
       hash.each do |unit, value|
         time = self.respond_to?("#{unit}s") ? self.send("#{unit}s") : 0
         times[unit] = time if time > 0
       end
     end
-
-    [@@in_months, @@in_seconds].each &get_time
 
     times.map do |unit, time|
       "#{time} #{unit}#{'s' if time > 1}"
@@ -217,39 +182,14 @@ class Date
 end
 
 class Fixnum
-  def seconds
-    RelativeTime.new(self, :second)
+  [:@@in_seconds, :@@in_months].each do |units|
+    units = RelativeTime.class_variable_get(units)
+    units.keys.each do |unit|
+      define_method(unit) do
+        RelativeTime.new(self, unit)
+      end
+      
+      alias_method("#{unit}s", unit)
+    end
   end
-
-  def minutes
-    RelativeTime.new(self, :minute)
-  end
-
-  def hours
-    RelativeTime.new(self, :hour)
-  end
-
-  def days
-    RelativeTime.new(self, :day)
-  end
-
-  def weeks
-    RelativeTime.new(self, :week)
-  end
-
-  def months
-    RelativeTime.new(self, :month)
-  end
-
-  def years
-    RelativeTime.new(self, :year)
-  end
-
-  alias_method :second,  :seconds
-  alias_method :minute,  :minutes
-  alias_method :hour,    :hours
-  alias_method :day,     :days
-  alias_method :week,    :weeks
-  alias_method :month,   :months
-  alias_method :year,    :years
 end
