@@ -17,6 +17,11 @@ class RelativeTime
     :millenium => 12000
   }
 
+  @@average_seconds = {
+    :month => 2628000,
+    :year => 31540000
+  }
+
   def initialize(count = 0, unit = :second)
     @seconds = 0
     @months = 0
@@ -80,6 +85,72 @@ class RelativeTime
 
   def from_now
     self.after(Time.now)
+  end
+
+  def in_years
+    @months / @@in_months[:year]
+  end
+
+  def years
+    self.in_years
+  end
+
+  def in_months
+    @months / @@in_months[:month]
+  end
+
+  def months
+    self.in_months - self.in_years.years.in_months
+  end
+
+  def average!
+    years = self.in_years
+    months = self.in_months - years.years.in_months
+    @seconds += (
+      (@@average_seconds[:month] * months) +
+      (@@average_seconds[:year] * years)
+    )
+    @months = 0
+  end
+
+  def in_weeks
+    @seconds / @@in_seconds[:week]
+  end
+
+  def weeks
+    self.in_weeks
+  end
+
+  def in_days
+    @seconds / @@in_seconds[:day]
+  end
+
+  def days
+    self.in_days - self.in_weeks.weeks.in_days
+  end
+
+  def in_hours
+    @seconds / @@in_seconds[:hour]
+  end
+
+  def hours
+    self.in_hours - self.in_days.days.in_hours
+  end
+
+  def in_minutes
+    @seconds / @@in_seconds[:minute]
+  end
+
+  def minutes
+    self.in_minutes - self.in_hours.hours.in_minutes
+  end
+
+  def in_seconds
+    @seconds / @@in_seconds[:second]
+  end
+
+  def seconds
+    self.in_seconds - self.in_minutes.minutes.in_seconds
   end
 end
 
