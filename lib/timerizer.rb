@@ -125,10 +125,6 @@ class Date
   def to_date
     self
   end
-  
-  def to_time
-    Time.new(self.year, self.month, self.day)
-  end
 end
 
 class Fixnum
