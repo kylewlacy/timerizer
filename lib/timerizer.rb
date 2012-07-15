@@ -135,7 +135,7 @@ class RelativeTime
   def to_s
     times = {}
 
-    [@@in_months, @@in_seconds].each do |hash|
+    [@@in_seconds, @@in_months].each do |hash|
       hash.each do |unit, value|
         time = self.respond_to?("#{unit}s") ? self.send("#{unit}s") : 0
         times[unit] = time if time > 0
@@ -196,8 +196,9 @@ class Fixnum
   [:@@in_seconds, :@@in_months].each do |units|
     units = RelativeTime.class_variable_get(units)
     units.keys.each do |unit|
-      define_method(unit) do
-        RelativeTime.new(self, unit)
+      define_method(unit) do |additional = RelativeTime.new|
+        time = RelativeTime.new(self, unit)
+        time + additional
       end
       
       alias_method("#{unit}s", unit)
