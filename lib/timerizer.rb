@@ -109,10 +109,16 @@ class Time
 end
 
 class Date
-  def days_in_month(month = self.month)
-    number_of_days = [31, (not self.leap?) ? 28 : 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  def days_in_month
+    days_in_feb = (not self.leap?) ? 28 : 29
+    number_of_days = [
+      31,  days_in_feb,  31,  30,  31,  30,
+      31,  31,           30,  31,  30,  31
+    ]
 
-    number_of_days.fetch(month - 1)
+    number_of_days.fetch(self.month - 1)
+  end
+
   end
 end
 
