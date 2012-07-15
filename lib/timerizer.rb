@@ -29,7 +29,7 @@ class RelativeTime
   end
 
   def before(time)
-    time = time - @seconds
+    time = time.to_time - @seconds
 
     new_month = time.month - @months
     new_year = time.year
@@ -55,7 +55,7 @@ class RelativeTime
   end
 
   def after(time)
-    time = time + @seconds
+    time = time.to_time + @seconds
 
     new_year = time.year
     new_month = time.month + @months
@@ -106,6 +106,9 @@ class Time
     Date.new(self.year, self.month, self.day)
   end
 
+  def to_time
+    self
+  end
 end
 
 class Date
@@ -119,6 +122,12 @@ class Date
     number_of_days.fetch(self.month - 1)
   end
 
+  def to_date
+    self
+  end
+  
+  def to_time
+    Time.new(self.year, self.month, self.day)
   end
 end
 
