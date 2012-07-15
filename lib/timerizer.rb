@@ -102,7 +102,6 @@ class RelativeTime
         in_superior = "in_#{superior_unit}s"
 
         time = self.send(in_method)
-        puts units.length > index+1
         if(units.length > index+1)
           time -= self.send(in_superior).send(superior_unit).send(in_method)
         end
@@ -119,6 +118,18 @@ class RelativeTime
       (@@average_seconds[:year] * years)
     )
     @months = 0
+  end
+
+  def +(time)
+    raise ArgumentError unless time.class == RelativeTime
+    @seconds += time.in_seconds
+    self
+  end
+
+  def -(time)
+    raise ArgumentError unless time.class == RelativeTime
+    @seconds -= time.in_seconds
+    self
   end
 
   def to_s
