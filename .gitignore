@@ -1,1 +1,3 @@
 timerizer*.gem
+doc/**
+.yardoc/**
