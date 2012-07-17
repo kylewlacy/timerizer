@@ -19,7 +19,11 @@ Currently, Timerizer only works in Ruby version 1.9.2 and 1.9.3
 
 Building and Installation
 -------------------------
-To build and install Timerizer, do the following:
+If you want to install Timerizer:
+
+    gem install timerizer
+
+To build and install Timerizer yourself, however, do the following:
 
     git clone git://github.com/kylewlacy/timerizer.git
     cd timerizer
