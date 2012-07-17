@@ -230,15 +230,12 @@ class Date
 end
 
 class Fixnum
-  [:@@in_seconds, :@@in_months].each do |units|
-    units = RelativeTime.class_variable_get(units)
-    units.keys.each do |unit|
-      define_method(unit) do |additional = RelativeTime.new|
-        time = RelativeTime.new(self, unit)
-        time + additional
-      end
-      
-      alias_method("#{unit}s", unit)
+  units  = RelativeTime.class_variable_get(:@@units)
+  units.each do |unit, plural|
+    define_method(unit) do |added_time = RelativeTime.new|
+      time = RelativeTime.new(self, unit)
+      time + added_time
     end
+    alias_method(plural, unit)
   end
 end
