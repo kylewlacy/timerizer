@@ -37,8 +37,8 @@ class RelativeTime
 
   def initialize(count = 0, unit = :second)
     if(count.is_a? Hash)
-      @seconds = count[:seconds]
-      @months = count[:months]
+      @seconds = count[:seconds] || 0
+      @months = count[:months] || 0
       return
     end
 
@@ -131,11 +131,14 @@ class RelativeTime
   end
 
   def average
-    return self unless self.in_seconds > 0
+    return self unless @seconds > 0
 
-    months = (self.in_seconds / @@average_seconds[:month]) + @months
-    remainder = months.months.unaverage.in_seconds
-    months.months (@seconds - remainder).seconds
+    seconds = @seconds - months.months.unaverage.in_seconds
+    months = (@seconds / @@average_seconds[:month]) + @months
+    RelativeTime.new({
+      :seconds => seconds,
+      :months => months
+    })
   end
 
   def average!
@@ -146,9 +149,9 @@ class RelativeTime
   end
 
   def unaverage
-    seconds = @@average_seconds[:month] * self.in_months
+    seconds = @@average_seconds[:month] * @months
     seconds += @seconds
-    seconds.seconds
+    RelativeTime.new({:seconds => seconds})
   end
 
   def unaverage!
