@@ -52,6 +52,12 @@ class RelativeTime
     end
   end
 
+  def get(time)
+    return @seconds if time == :seconds
+    return @months if time == :months
+    raise ArgumentError
+  end
+
   def before(time)
     time = time.to_time - @seconds
 
@@ -133,7 +139,7 @@ class RelativeTime
   def average
     return self unless @seconds > 0
 
-    seconds = @seconds - months.months.unaverage.in_seconds
+    seconds = @seconds - months.months.unaverage.get(:seconds)
     months = (@seconds / @@average_seconds[:month]) + @months
     RelativeTime.new({
       :seconds => seconds,
@@ -143,8 +149,8 @@ class RelativeTime
 
   def average!
     averaged = self.average
-    @seconds = averaged.in_seconds
-    @months = averaged.in_months
+    @seconds = averaged.get(:seconds)
+    @months = averaged.get(:months)
     self
   end
 
@@ -156,24 +162,24 @@ class RelativeTime
 
   def unaverage!
     unaveraged = self.average
-    @seconds = unaverage.in_seconds
-    @months = unaverage.in_months
+    @seconds = unaverage.get(:seconds)
+    @months = unaverage.get(:months)
     self
   end
 
   def +(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
     RelativeTime.new({
-      :seconds => @seconds + time.in_seconds,
-      :months => @months + time.in_months
+      :seconds => @seconds + time.get(:seconds),
+      :months => @months + time.get(:months)
     })
   end
 
   def -(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
     RelativeTime.new({
-      :seconds => @seconds - time.in_seconds,
-      :months => @months - time.in_months
+      :seconds => @seconds - time.get(:seconds),
+      :months => @months - time.get(:months)
     })
   end
 
