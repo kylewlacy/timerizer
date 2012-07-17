@@ -139,11 +139,11 @@ class RelativeTime
   def average
     return self unless @seconds > 0
 
+    months = (@seconds / @@average_seconds[:month])
     seconds = @seconds - months.months.unaverage.get(:seconds)
-    months = (@seconds / @@average_seconds[:month]) + @months
     RelativeTime.new({
       :seconds => seconds,
-      :months => months
+      :months => months + @months
     })
   end
 
