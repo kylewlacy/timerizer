@@ -140,16 +140,13 @@ class RelativeTime
     self
   end
 
-  def +(time)
-    raise ArgumentError unless time.class == RelativeTime
-    @seconds += time.in_seconds
-    self
-  end
-
-  def -(time)
-    raise ArgumentError unless time.class == RelativeTime
-    @seconds -= time.in_seconds
-    self
+  [:+, :-].each do |operator|
+    define_method(operator) do |time|
+      raise ArgumentError unless time.class == RelativeTime
+      @seconds = @seconds.send(operator, time.in_seconds)
+      @months = @months.send(operator, time.in_months)
+      self
+    end
   end
 
   def to_s
