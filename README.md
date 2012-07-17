@@ -25,3 +25,7 @@ To build and install Timerizer, do the following:
     cd timerizer
     rake make
     gem install ./timerizer-{verion}.gem
+
+Documentation
+-------------
+Documentation can be found on [RubyDoc.info](http://rdoc.info/github/kylewlacy/timerizer/master/frames)
