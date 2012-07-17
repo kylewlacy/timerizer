@@ -36,6 +36,12 @@ class RelativeTime
   }
 
   def initialize(count = 0, unit = :second)
+    if(count.is_a? Hash)
+      @seconds = count[:seconds]
+      @months = count[:months]
+      return
+    end
+
     @seconds = 0
     @months = 0
 
@@ -152,22 +158,36 @@ class RelativeTime
     self
   end
 
-  [:+, :-].each do |operator|
-    define_method(operator) do |time|
-      raise ArgumentError unless time.is_a? RelativeTime
-      @seconds = @seconds.send(operator, time.in_seconds)
-      @months = @months.send(operator, time.in_months)
-      self
-    end
+  def +(time)
+    raise ArgumentError unless time.is_a?(RelativeTime)
+    RelativeTime.new({
+      :seconds => @seconds + time.in_seconds,
+      :months => @months + time.in_months
+    })
   end
 
-  [:*, :/].each do |operator|
-    define_method(operator) do |factor|
-      raise ArgumentError unless factor.is_a? Numeric
-      @seconds = @seconds.send(operator, factor)
-      @months = @months.send(operator, factor)
-      self
-    end
+  def -(time)
+    raise ArgumentError unless time.is_a?(RelativeTime)
+    RelativeTime.new({
+      :seconds => @seconds - time.in_seconds,
+      :months => @months - time.in_months
+    })
+  end
+
+  def *(factor)
+    raise ArgumentError unless factor.is_a?(Numeric)
+    RelativeTime.new({
+      :seconds => @seconds * factor,
+      :months => @months * factor
+    })
+  end
+
+  def /(factor)
+    raise ArgumentError unless factor.is_a?(Numeric)
+    RelativeTime.new({
+      :seconds => @seconds / factor,
+      :months => @months / factor
+    })
   end
 
   def to_s

@@ -31,6 +31,7 @@ describe RelativeTime do
 end
 
 describe Time do
+  
 end
 
 describe Date do
