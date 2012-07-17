@@ -172,17 +172,15 @@ class RelativeTime
   end
 
   def to_s
-    times = {}
+    times = [] 
 
-    [@@in_seconds, @@in_months].each do |hash|
-      hash.each do |unit, value|
-        time = self.respond_to?("#{unit}s") ? self.send("#{unit}s") : 0
-        times[unit] = time if time > 0
-      end
+    @@units.each do |unit, plural|
+      time = self.respond_to?(plural) ? self.send(plural) : 0
+      times << [time, (time != 1) ? plural : unit] if time > 0
     end
 
-    times.map do |unit, time|
-      "#{time} #{unit}#{'s' if time > 1}"
+    times.map do |time|
+      time.join(' ')
     end.reverse.join(', ')
   end
 end
