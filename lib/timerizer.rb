@@ -58,11 +58,11 @@ class RelativeTime
     if(Date.valid_date?(new_year, new_month, time.day))
       new_day = time.day
     else
-      new_day = Date.days_in_month(new_month)
+      new_day = Date.new(new_year, new_month).days_in_month
     end
 
     new_time = Time.new(
-      new_year, new_month, time.day,
+      new_year, new_month, new_day,
       time.hour, time.min, time.sec
     )
     Time.at(new_time.to_i, time.nsec/1000)
@@ -84,13 +84,12 @@ class RelativeTime
     if(Date.valid_date?(new_year, new_month, time.day))
       new_day = time.day
     else
-      new_month += 1
-      new_day = 1
+      new_day = Date.new(new_year, new_month).days_in_month
     end
 
 
     new_time = Time.new(
-      new_year, new_month, time.day,
+      new_year, new_month, new_day,
       time.hour, time.min, time.sec
     )
     Time.at(new_time.to_i, time.nsec/1000.0)
