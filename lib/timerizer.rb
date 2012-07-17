@@ -127,9 +127,9 @@ class RelativeTime
 
   def average
     return self.unaverage unless self.in_months > 0
+
     seconds = @@average_seconds[:month] * self.in_months
     seconds += @seconds
-    
     seconds.seconds
   end
 
@@ -142,9 +142,18 @@ class RelativeTime
 
   [:+, :-].each do |operator|
     define_method(operator) do |time|
-      raise ArgumentError unless time.class == RelativeTime
+      raise ArgumentError unless time.is_a? RelativeTime
       @seconds = @seconds.send(operator, time.in_seconds)
       @months = @months.send(operator, time.in_months)
+      self
+    end
+  end
+
+  [:*, :/].each do |operator|
+    define_method(operator) do |factor|
+      raise ArgumentError unless factor.is_a? Numeric
+      @seconds = @seconds.send(operator, factor)
+      @months = @months.send(operator, factor)
       self
     end
   end
