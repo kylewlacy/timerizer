@@ -1,25 +1,38 @@
 require 'date'
 
 class RelativeTime
+  @@units = {
+    :second     => :seconds,
+    :minute     => :minutes,
+    :hour       => :hours,
+    :day        => :days,
+    :week       => :weeks,
+    :month      => :months,
+    :year       => :years,
+    :decade     => :decades,
+    :century    => :centuries,
+    :millennium => :millennia
+  }
+
   @@in_seconds = {
       :second => 1,
       :minute => 60,
-      :hour => 3600,
-      :day => 86400,
-      :week => 604800
+      :hour   => 3600,
+      :day    => 86400,
+      :week   => 604800
   }
 
   @@in_months = {
-    :month => 1,
-    :year => 12,
-    :decade => 120,
-    :century => 1200,
-    :millenium => 12000
+    :month      => 1,
+    :year       => 12,
+    :decade     => 120,
+    :century    => 1200,
+    :millennium => 12000
   }
 
   @@average_seconds = {
     :month => 2629746,
-    :year => 31556952
+    :year  => 31556952
   }
 
   def initialize(count = 0, unit = :second)
@@ -87,26 +100,28 @@ class RelativeTime
     self.after(Time.now)
   end
 
-  [@@in_months, @@in_seconds].each do |units|
-    units.keys.each_with_index do |unit, index|
-      in_method = "in_#{unit}s"
-      count_method = "#{unit}s"
-      superior_unit = units.keys[index+1]
+  @@units.each do |unit, plural|
+    in_method = "in_#{plural}"
+    count_method = plural
+    superior_unit = @@units.keys.index(unit) + 1
 
-      define_method(in_method) do
-        count = self.instance_variable_get("@#{units.keys[0]}s")
-        count / units[unit]
+    define_method(in_method) do
+      if(@@in_seconds.has_key?(unit))
+        @seconds / @@in_seconds[unit]
+      elsif(@@in_months.has_key?(unit))
+        @months / @@in_months[unit]
       end
+    end
 
-      define_method(count_method) do
-        in_superior = "in_#{superior_unit}s"
+    define_method(count_method) do
+      in_superior = "in_#{@@units.values[superior_unit]}"
+      count_superior = @@units.keys[superior_unit]
 
-        time = self.send(in_method)
-        if(units.length > index+1)
-          time -= self.send(in_superior).send(superior_unit).send(in_method)
-        end
-        time
+      time = self.send(in_method)
+      if(@@units.length > superior_unit)
+        time -= self.send(in_superior).send(count_superior).send(in_method)
       end
+      time
     end
   end
 
