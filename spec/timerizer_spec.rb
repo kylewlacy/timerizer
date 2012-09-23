@@ -84,12 +84,11 @@ describe Time do
 
     lambda do
       Time.until(1.minute.ago)
-    end.should raise_error(Time::TimeIsInThePastException)
+    end.should raise_error(Time::TimeIsInThePastError)
 
     lambda do
       Time.since(Date.tomorrow)
-    end.should raise_error(Time::TimeIsInTheFutureException)
-
+    end.should raise_error(Time::TimeIsInTheFutureError)
   end
 end
 

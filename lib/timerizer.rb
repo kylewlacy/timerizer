@@ -271,8 +271,8 @@ end
 
 # {Time} class monkeywrenched with {RelativeTime} support.
 class Time
-  class TimeIsInThePastException < Exception; end
-  class TimeIsInTheFutureException < Exception; end
+  class TimeIsInThePastError < ArgumentError; end
+  class TimeIsInTheFutureError < ArgumentError; end
 
   add = instance_method(:+)
   define_method(:+) do |time|
@@ -302,7 +302,7 @@ class Time
   # @see Time#since
   # @see Time#between
   def self.until(time)
-    raise TimeIsInThePastException if Time.now > time.to_time
+    raise TimeIsInThePastError if Time.now > time.to_time
 
     Time.between(Time.now, time)
   end
@@ -317,7 +317,7 @@ class Time
   # @see Time#since
   # @see Time#between
   def self.since(time)
-    raise TimeIsInTheFutureException if time.to_time > Time.now
+    raise TimeIsInTheFutureError if time.to_time > Time.now
 
     Time.between(Time.now, time)
   end
