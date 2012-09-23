@@ -65,6 +65,11 @@ class RelativeTime
     end
   end
 
+  def ==(time)
+    raise ArgumentError unless time.is_a?(RelativeTime)
+    return @seconds == time.get(:seconds) && @months == time.get(:months)
+  end
+
   # Return the number of base units in a RelativeTime.
   # @param [Symbol] unit The unit to return, either :seconds or :months
   # @return [Fixnum] The requested unit count

@@ -55,6 +55,11 @@ describe RelativeTime do
     unaverage.get(:seconds).should == two_months[:unaverage][:seconds]
     unaverage.get(:months).should == two_months[:unaverage][:months]
   end
+
+  it "can compare two RelativeTimes" do
+    1.minute.should == 1.minute
+    1.minute.should_not == 1.hour
+  end
 end
 
 describe Time do
