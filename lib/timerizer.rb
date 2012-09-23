@@ -65,6 +65,10 @@ class RelativeTime
     end
   end
 
+  # Compares two RelativeTimes to determine if they are equal
+  # @param [RelativeTime] time The RelativeTime to compare
+  # @return [Boolean] True if both RelativeTimes are equal
+  # @note Be weary of rounding; this method compares both RelativeTimes' base units
   def ==(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
     return @seconds == time.get(:seconds) && @months == time.get(:months)

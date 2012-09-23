@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name        = 'timerizer'
-  gem.version     = '0.0.2'
+  gem.version     = '0.0.3'
   gem.date        = '2012-09-22'
   gem.summary     = 'Rails time helpers... without the Rails'
   gem.description = 'A simple set of Rails-like time helpers'
