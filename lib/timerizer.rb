@@ -283,18 +283,46 @@ class Time
     end
   end
 
+  # Calculates the time until a given time
+  # @param [Time] time The time until now to calculate
+  # @return [RelativeTime] The time until the provided time
+  # @raise[TimeIsInThePastException] The provided time is in the past
+  # @example
+  #   Time.until(Time.new(2012, 12, 25))
+  #     => 13 weeks, 2 days, 6 hours, 31 minutes, 39 seconds
+  # @see Time#since
+  # @see Time#between
   def self.until(time)
     raise TimeIsInThePastException if Time.now > time
 
     Time.between(Time.now, time)
   end
 
+  # Calculates the time since a given time
+  # @param [Time] since The time to calculate since now
+  # @return [RelativeTime] The time since the provided time
+  # @raise[TimeIsInTheFutureException] The provided time is in the future
+  # @example
+  #   Time.since(Time.new(2011, 10, 31))
+  #     => 46 weeks, 5 days, 18 hours, 26 minutes, 10 seconds
+  # @see Time#since
+  # @see Time#between
   def self.since(time)
     raise TimeIsInTheFutureException if time > Time.now
 
     Time.between(Time.now, time)
   end
 
+  # Calculate the amount of time between two times.
+  # @param [Time] time1 The initial time
+  # @param [Time] time2 The final time
+  # @return [RelativeTime] Calculated time between time1 and time2
+  # @example
+  #   Time.between(1.minute.ago, 1.hour.ago)
+  #     => 59.minutes
+  # @note The two times are interchangable; which comes first doesn't matter
+  # @see Time#until
+  # @see Time#since
   def self.between(time1, time2)
     time_between = (time2 - time1).abs
 
@@ -340,10 +368,14 @@ class Date
     self
   end
 
+  # Return tomorrow as {Date}.
+  # @see Date#yesterday
   def self.tomorrow
     1.day.from_now.to_date
   end
 
+  # Return yesterday as {Date}.
+  # @see Date#tomorrow
   def self.yesterday
     1.day.ago.to_date
   end
