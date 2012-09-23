@@ -98,6 +98,14 @@ describe Date do
     Date.new(2000, 2).days_in_month.should == 29
     Date.new(2001, 2).days_in_month.should == 28
   end
+
+  it "returns the date yesterday and tomorrow" do
+    yesterday = 1.day.ago.to_date
+    tomorrow = 1.day.from_now.to_date
+
+    Date.yesterday.should == yesterday
+    Date.tomorrow.should == tomorrow
+  end
 end
 
 describe Fixnum do

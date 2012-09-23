@@ -339,6 +339,14 @@ class Date
   def to_date
     self
   end
+
+  def self.tomorrow
+    1.day.from_now.to_date
+  end
+
+  def self.yesterday
+    1.day.ago.to_date
+  end
 end
 
 # Monkeywrenched {Fixnum} class enabled to return {RelativeTime} objects.
