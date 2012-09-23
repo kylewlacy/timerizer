@@ -262,6 +262,9 @@ end
 
 # {Time} class monkeywrenched with {RelativeTime} support.
 class Time
+  class TimeIsInThePastException < Exception; end
+  class TimeIsInTheFutureException < Exception; end
+
   add = instance_method(:+)
   define_method(:+) do |time|
     if(time.class == RelativeTime)
@@ -278,6 +281,24 @@ class Time
     else
       subtract.bind(self).(time)
     end
+  end
+
+  def self.until(time)
+    raise TimeIsInThePastException if Time.now > time
+
+    Time.between(Time.now, time)
+  end
+
+  def self.since(time)
+    raise TimeIsInTheFutureException if time > Time.now
+
+    Time.between(Time.now, time)
+  end
+
+  def self.between(time1, time2)
+    time_between = (time2 - time1).abs
+
+    RelativeTime.new(time_between.round)
   end
 
   # Convert {Time} to {Date}.

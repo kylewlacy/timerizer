@@ -68,6 +68,23 @@ describe Time do
     time = Time.new(2000, 1, 1, 11, 59, 00)
     time.to_date.should == Date.new(2000, 1, 1)
   end
+
+  it "calculates the time between two Times" do
+    time = 1.minute.ago
+    Time.until(1.minute.from_now).in_seconds.should be_within(1.0).of(60)
+    Time.since(1.hour.ago).in_seconds.should be_within(1.0).of(3600)
+
+    Time.between(1.minute.ago, 2.minutes.ago).in_seconds.should be_within(1.0).of(60)
+
+    lambda do
+      Time.until(1.minute.ago)
+    end.should raise_error(Time::TimeIsInThePastException)
+
+    lambda do
+      Time.since(1.minute.from_now)
+    end.should raise_error(Time::TimeIsInTheFutureException)
+
+  end
 end
 
 describe Date do
