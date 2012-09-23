@@ -259,6 +259,7 @@ class RelativeTime
     end.reverse.join(', ')
   end
 end
+
 # {Time} class monkeywrenched with {RelativeTime} support.
 class Time
   add = instance_method(:+)

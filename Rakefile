@@ -1,10 +1,7 @@
 require 'rake'
 require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec) do |rspec|
-  rspec.rspec_opts = '--no-color'
-end
-
+RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 task :make do
