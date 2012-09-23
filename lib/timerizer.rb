@@ -293,7 +293,7 @@ class Time
   # @see Time#since
   # @see Time#between
   def self.until(time)
-    raise TimeIsInThePastException if Time.now > time
+    raise TimeIsInThePastException if Time.now > time.to_time
 
     Time.between(Time.now, time)
   end
@@ -308,7 +308,7 @@ class Time
   # @see Time#since
   # @see Time#between
   def self.since(time)
-    raise TimeIsInTheFutureException if time > Time.now
+    raise TimeIsInTheFutureException if time.to_time > Time.now
 
     Time.between(Time.now, time)
   end
@@ -324,7 +324,7 @@ class Time
   # @see Time#until
   # @see Time#since
   def self.between(time1, time2)
-    time_between = (time2 - time1).abs
+    time_between = (time2.to_time - time1.to_time).abs
 
     RelativeTime.new(time_between.round)
   end

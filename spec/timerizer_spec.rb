@@ -75,13 +75,14 @@ describe Time do
     Time.since(1.hour.ago).in_seconds.should be_within(1.0).of(3600)
 
     Time.between(1.minute.ago, 2.minutes.ago).in_seconds.should be_within(1.0).of(60)
+    Time.between(Date.yesterday, Date.tomorrow).in_seconds.should be_within(1.0).of(2.days.in_seconds)
 
     lambda do
       Time.until(1.minute.ago)
     end.should raise_error(Time::TimeIsInThePastException)
 
     lambda do
-      Time.since(1.minute.from_now)
+      Time.since(Date.tomorrow)
     end.should raise_error(Time::TimeIsInTheFutureException)
 
   end
