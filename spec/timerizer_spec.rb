@@ -70,7 +70,7 @@ describe Wallclock do
 
   it "can be initialize from a hash of values" do
     date = Date.new(2000, 1, 1)
-    Wallclock.new(:seconds => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
+    Wallclock.new(:second => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
   end
 
   it "raises an error for invalid wallclock times" do

@@ -1,6 +1,6 @@
 require 'date'
 
-# Represents a relative amount of time. For example, `5 days`, `4 years`, and `5 years, 4 hours, 3 minutes, 2 seconds` are all RelativeTimes.
+# Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
 class RelativeTime
   @@units = {
     :second     => :seconds,
@@ -82,8 +82,11 @@ class RelativeTime
   # @return [Boolean] True if both RelativeTimes are equal
   # @note Be weary of rounding; this method compares both RelativeTimes' base units
   def ==(time)
-    raise ArgumentError unless time.is_a? RelativeTime
-    @seconds == time.get(:seconds) && @months == time.get(:months)
+    if time.is_a?(RelativeTime)
+      @seconds == time.get(:seconds) && @months == time.get(:months)
+    else
+      false
+    end
   end
 
   # Return the number of base units in a RelativeTime.
@@ -287,13 +290,29 @@ class RelativeTime
   end
 end
 
+# Represents a time, but not a date. '`7:00 PM`' would be an example of a Wallclock object
 class Wallclock
   class InvalidMeridiemError < ArgumentError; end
   class TimeOutOfBoundsError < ArgumentError; end
 
+  # Initialize a new instance of Wallclock
+  # @overload new(hash)
+  #   @param [Hash] units The units to initialize with
+  #   @option units [Fixnum] :hour The hour to initialize with
+  #   @option units [Fixnum] :minute The minute to initialize with
+  #   @option units [Fixnum] :second The second to initialize with
+  # @overload new(hour, minute, meridiem)
+  #   @param [Fixnum] hour The hour to initialize with
+  #   @param [Fixnum] minute The minute to initialize with
+  #   @param [Symbol] meridiem The meridiem to initialize with (AM or PM)
+  # @overload new(hour, minute, second, meridiem)
+  #   @param [Fixnum] hour The hour to initialize with
+  #   @param [Fixnum] minute The minute to initialize with
+  #   @param [Fixnum] second The second to initialize with
+  #   @param [Symbol] meridiem The meridiem to initialize with (:am or :pm)
   def initialize(hour = 0, minute = 0, second = 0, meridiem = :am)
     if hour.is_a?(Hash)
-      second = hour[:seconds] || 0
+      second = hour[:second] || 0
       minute = hour[:minute] || 0
       hour = hour[:hour] || 0
     else
@@ -324,6 +343,13 @@ class Wallclock
     end
   end
 
+  # Returns the time of the Wallclock on a date
+  # @param [Date] The date to apply the time on
+  # @return [Time] The time after the given date
+  # @example yesterday at 5:00
+  #   time = Wallclock.new(5, 00, :pm)
+  #   time.on(Date.yesterday)
+  #     => 2000-1-1 17:00:00 -0800
   def on(date)
     date.to_date.to_time + @seconds
   end
