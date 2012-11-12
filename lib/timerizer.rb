@@ -79,9 +79,9 @@ class RelativeTime
   # @raise [ArgumentError] Unit requested was not :seconds or :months
   def get(unit)
     if unit == :seconds
-      @seconds if unit == :seconds
+      @seconds
     elsif unit == :months
-      @months if unit == :months
+      @months
     else
       raise ArgumentError
     end
