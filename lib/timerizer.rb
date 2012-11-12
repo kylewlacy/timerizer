@@ -486,8 +486,7 @@ end
 #     => 5 minutes
 # @see {RelativeTime#units}
 class Fixnum
-  units  = RelativeTime.class_variable_get(:@@units)
-  units.each do |unit, plural|
+  RelativeTime.units.each do |unit, plural|
     define_method(unit) do |added_time = RelativeTime.new|
       time = RelativeTime.new(self, unit)
       time + added_time
