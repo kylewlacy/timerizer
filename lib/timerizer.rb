@@ -348,7 +348,7 @@ class Wallclock
   end
 
   # Returns the time of the Wallclock on a date
-  # @param [Date] The date to apply the time on
+  # @param [Date] date The date to apply the time on
   # @return [Time] The time after the given date
   # @example yesterday at 5:00
   #   time = Wallclock.new(5, 00, :pm)
@@ -398,7 +398,7 @@ class Time
   end
 
   # Calculates the time since a given time
-  # @param [Time] since The time to calculate since now
+  # @param [Time] time The time to calculate since now
   # @return [RelativeTime] The time since the provided time
   # @raise[TimeIsInTheFutureException] The provided time is in the future
   # @example
