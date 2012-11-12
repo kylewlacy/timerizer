@@ -33,6 +33,20 @@ describe RelativeTime do
     it "calculates an equivalent WallClock time" do
       (5.hours 30.minutes).to_wall.should == WallClock.new(5, 30)
     end
+
+    it "raises an error for times beyond 24 hours" do
+      expect do
+        1.day.to_wall
+      end.to raise_error WallClock::TimeOutOfBoundsError
+
+      expect do
+        217.hours.to_wall
+      end.to raise_error WallClock::TimeOutOfBoundsError
+
+      expect do
+        (1.month 3.seconds).to_wall
+      end.to raise_error WallClock::TimeOutOfBoundsError
+    end
   end
 
   context "#to_s" do

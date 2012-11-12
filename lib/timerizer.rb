@@ -320,7 +320,7 @@ class RelativeTime
   end
 
   def to_wall
-    raise ArgumentError if @months > 0
+    raise WallClock::TimeOutOfBoundsError if @months > 0
     WallClock.new(:second => @seconds)
   end
 
@@ -427,7 +427,7 @@ class WallClock
       RelativeTime.units_in_seconds.fetch(:minute) * minute +
       second
 
-    if @seconds > RelativeTime.units_in_seconds.fetch(:day)
+    if @seconds >= RelativeTime.units_in_seconds.fetch(:day)
       raise TimeOutOfBoundsError
     end
   end
