@@ -63,8 +63,10 @@ class RelativeTime
   #   @param [Symbol] unit The unit to initialize. See {RelativeTime#units}
   def initialize(count = 0, unit = :second)
     if count.is_a? Hash
-      @seconds = count[:seconds] || 0
-      @months = count[:months] || 0
+      units = count
+
+      @seconds = units[:seconds] || 0
+      @months = units[:months] || 0
     else
       @seconds = 0
       @months = 0
