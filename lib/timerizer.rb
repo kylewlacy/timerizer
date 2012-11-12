@@ -64,12 +64,10 @@ class RelativeTime
   def initialize(count = 0, unit = :second)
     if count.is_a? Hash
       units = count
-
-      @seconds = units[:seconds] || 0
-      @months = units[:months] || 0
+      units.default = 0
+      @seconds, @months = units.values_at(:seconds, :months)
     else
-      @seconds = 0
-      @months = 0
+      @seconds = @months = 0
 
       if(@@in_seconds.has_key?(unit))
         @seconds = count * @@in_seconds.fetch(unit)
