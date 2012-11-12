@@ -383,7 +383,11 @@ end
 
 # Represents a time, but not a date. '`7:00 PM`' would be an example of a WallClock object
 class WallClock
+  # Represents an error where an invalid meridiem was passed to WallClock.
+  # @see #new
   class InvalidMeridiemError < ArgumentError; end
+  # Represents an error where a time beyond 24 hours was passed to WallClock.
+  # @see #new
   class TimeOutOfBoundsError < ArgumentError; end
 
   # Initialize a new instance of WallClock
@@ -551,7 +555,11 @@ end
 
 # {Time} class monkeywrenched with {RelativeTime} support.
 class Time
+  # Represents an error where two times were expected to be in the future, but were in the past.
+  # @see #until
   class TimeIsInThePastError < ArgumentError; end
+  # Represents an error where two times were expected to be in the past, but were in the future.
+  # @see #since
   class TimeIsInTheFutureError < ArgumentError; end
 
   add = instance_method(:+)
