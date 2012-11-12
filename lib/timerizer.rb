@@ -49,19 +49,18 @@ class RelativeTime
   #   @param [Fixnum] count The number of units to initialize with
   #   @param [Symbol] unit The unit to initialize. See {@@units}
   def initialize(count = 0, unit = :second)
-    if(count.is_a? Hash)
+    if count.is_a? Hash
       @seconds = count[:seconds] || 0
       @months = count[:months] || 0
-      return
-    end
+    else
+      @seconds = 0
+      @months = 0
 
-    @seconds = 0
-    @months = 0
-
-    if(@@in_seconds.has_key?(unit))
-      @seconds = count * @@in_seconds.fetch(unit)
-    elsif(@@in_months.has_key?(unit))
-      @months = count * @@in_months.fetch(unit)
+      if(@@in_seconds.has_key?(unit))
+        @seconds = count * @@in_seconds.fetch(unit)
+      elsif(@@in_months.has_key?(unit))
+        @months = count * @@in_months.fetch(unit)
+      end
     end
   end
 
@@ -70,8 +69,8 @@ class RelativeTime
   # @return [Boolean] True if both RelativeTimes are equal
   # @note Be weary of rounding; this method compares both RelativeTimes' base units
   def ==(time)
-    raise ArgumentError unless time.is_a?(RelativeTime)
-    return @seconds == time.get(:seconds) && @months == time.get(:months)
+    raise ArgumentError unless time.is_a? RelativeTime
+    @seconds == time.get(:seconds) && @months == time.get(:months)
   end
 
   # Return the number of base units in a RelativeTime.
@@ -79,9 +78,13 @@ class RelativeTime
   # @return [Fixnum] The requested unit count
   # @raise [ArgumentError] Unit requested was not :seconds or :months
   def get(unit)
-    return @seconds if unit == :seconds
-    return @months if unit == :months
-    raise ArgumentError
+    if unit == :seconds
+      @seconds if unit == :seconds
+    elsif unit == :months
+      @months if unit == :months
+    else
+      raise ArgumentError
+    end
   end
 
   # Determines the time between RelativeTime and the given time.
@@ -188,14 +191,16 @@ class RelativeTime
   # @see #average!
   # @see #unaverage
   def average
-    return self unless @seconds > 0
-
-    months = (@seconds / @@average_seconds[:month])
-    seconds = @seconds - months.months.unaverage.get(:seconds)
-    RelativeTime.new({
-      :seconds => seconds,
-      :months => months + @months
-    })
+    if @seconds > 0
+      months = (@seconds / @@average_seconds[:month])
+      seconds = @seconds - months.months.unaverage.get(:seconds)
+      RelativeTime.new(
+        :seconds => seconds,
+        :months => months + @months
+      )
+    else
+      self
+    end
   end
 
   # Destructively average second-based units to month-based units.
@@ -217,7 +222,7 @@ class RelativeTime
   def unaverage
     seconds = @@average_seconds[:month] * @months
     seconds += @seconds
-    RelativeTime.new({:seconds => seconds})
+    RelativeTime.new(:seconds => seconds)
   end
 
   # Destructively average month-based units to second-based units.
