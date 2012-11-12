@@ -62,29 +62,29 @@ describe RelativeTime do
   end
 end
 
-describe Wallclock do
+describe WallClock do
   it "can apply a time on a day" do
     date = Date.new(2000, 1, 1)
-    Wallclock.new(9, 00, :pm).on(date).should == Time.new(2000, 1, 1, 21)
+    WallClock.new(9, 00, :pm).on(date).should == Time.new(2000, 1, 1, 21)
   end
 
   it "can be initialize from a hash of values" do
     date = Date.new(2000, 1, 1)
-    Wallclock.new(:second => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
+    WallClock.new(:second => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
   end
 
   it "raises an error for invalid wallclock times" do
     expect do
-      Wallclock.new(13, 00, :pm)
-    end.to raise_error(Wallclock::TimeOutOfBoundsError)
+      WallClock.new(13, 00, :pm)
+    end.to raise_error(WallClock::TimeOutOfBoundsError)
 
     expect do
-      Wallclock.new(24, 00, 00)
-    end.to raise_error(Wallclock::TimeOutOfBoundsError)
+      WallClock.new(24, 00, 00)
+    end.to raise_error(WallClock::TimeOutOfBoundsError)
 
     expect do
-      Wallclock.new(0, 60)
-    end.to raise_error(Wallclock::TimeOutOfBoundsError)
+      WallClock.new(0, 60)
+    end.to raise_error(WallClock::TimeOutOfBoundsError)
   end
 end
 

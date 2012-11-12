@@ -292,12 +292,12 @@ class RelativeTime
   end
 end
 
-# Represents a time, but not a date. '`7:00 PM`' would be an example of a Wallclock object
-class Wallclock
+# Represents a time, but not a date. '`7:00 PM`' would be an example of a WallClock object
+class WallClock
   class InvalidMeridiemError < ArgumentError; end
   class TimeOutOfBoundsError < ArgumentError; end
 
-  # Initialize a new instance of Wallclock
+  # Initialize a new instance of WallClock
   # @overload new(hash)
   #   @param [Hash] units The units to initialize with
   #   @option units [Fixnum] :hour The hour to initialize with
@@ -347,11 +347,11 @@ class Wallclock
     end
   end
 
-  # Returns the time of the Wallclock on a date
+  # Returns the time of the WallClock on a date
   # @param [Date] date The date to apply the time on
   # @return [Time] The time after the given date
   # @example yesterday at 5:00
-  #   time = Wallclock.new(5, 00, :pm)
+  #   time = WallClock.new(5, 00, :pm)
   #   time.on(Date.yesterday)
   #     => 2000-1-1 17:00:00 -0800
   def on(date)
