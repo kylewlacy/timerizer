@@ -2,7 +2,6 @@ require 'date'
 
 # Represents a relative amount of time. For example, `5 days`, `4 years`, and `5 years, 4 hours, 3 minutes, 2 seconds` are all RelativeTimes.
 class RelativeTime
-  # All potential units. Key is the unit name, and the value is its plural form.
   @@units = {
     :second     => :seconds,
     :minute     => :minutes,
@@ -16,7 +15,6 @@ class RelativeTime
     :millennium => :millennia
   }
 
-  # Unit values in seconds. If a unit is not present in this hash, it is assumed to be in the {@@in_months} hash.
   @@in_seconds = {
       :second => 1,
       :minute => 60,
@@ -25,7 +23,6 @@ class RelativeTime
       :week   => 604800
   }
 
-  # Unit values in months. If a unit is not present in this hash, it is assumed to be in the {@@in_seconds} hash.
   @@in_months = {
     :month      => 1,
     :year       => 12,
@@ -39,6 +36,22 @@ class RelativeTime
     :month => 2629746,
     :year  => 31556952
   }
+
+
+  # All potential units. Key is the unit name, and the value is its plural form.
+  def self.units
+    @@units
+  end
+
+  # Unit values in seconds. If a unit is not present in this hash, it is assumed to be in the {@@in_months} hash.
+  def self.units_in_seconds
+    @@in_seconds
+  end
+
+  # Unit values in months. If a unit is not present in this hash, it is assumed to be in the {@@in_seconds} hash.
+  def self.units_in_months
+    @@in_months
+  end
 
   # Initialize a new instance of RelativeTime.
   # @overload new(hash)
@@ -261,7 +274,7 @@ class RelativeTime
   #   (14.months 49.hours).to_s
   #     => 2 years, 2 months, 3 days, 1 hour
   def to_s
-    times = [] 
+    times = []
 
     @@units.each do |unit, plural|
       time = self.respond_to?(plural) ? self.send(plural) : 0
@@ -271,6 +284,48 @@ class RelativeTime
     times.map do |time|
       time.join(' ')
     end.reverse.join(', ')
+  end
+end
+
+class Wallclock
+  class InvalidMeridiemError < ArgumentError; end
+  class TimeOutOfBoundsError < ArgumentError; end
+
+  def initialize(hour = 0, minute = 0, second = 0, meridiem = :am)
+    if hour.is_a?(Hash)
+      second = hour[:seconds] || 0
+      minute = hour[:minute] || 0
+      hour = hour[:hour] || 0
+    else
+      if second.is_a?(String) || second.is_a?(Symbol)
+        meridiem = second
+        second = 0
+      end
+
+      meridiem = meridiem.downcase.to_sym
+      if !(meridiem == :am || meridiem == :pm)
+        raise InvalidMeridiemError
+      elsif meridiem == :pm && hour > 12
+        raise TimeOutOfBoundsError, "hour must be <= 12 for PM"
+      elsif hour >= 24 || minute >= 60 || second >= 60
+        raise TimeOutOfBoundsError
+      end
+
+      hour += 12 if meridiem == :pm
+    end
+
+    @seconds =
+      RelativeTime.units_in_seconds.fetch(:hour) * hour +
+      RelativeTime.units_in_seconds.fetch(:minute) * minute +
+      second
+
+    if @seconds > RelativeTime.units_in_seconds.fetch(:day)
+      raise TimeOutOfBoundsError
+    end
+  end
+
+  def on(date)
+    date.to_date.to_time + @seconds
   end
 end
 
