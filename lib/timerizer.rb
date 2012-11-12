@@ -37,6 +37,53 @@ class RelativeTime
     :year  => 31556952
   }
 
+  # Default syntax formats that can be used with #to_s
+  # @see #to_s
+  @@syntaxes = {
+    :micro => {
+      :units => {
+        :seconds => 's',
+        :minutes => 'm',
+        :hours => 'h',
+        :days => 'd',
+        :weeks => 'w',
+        :months => 'mn',
+        :years => 'y',
+      },
+      :separator => '',
+      :delimiter => ' ',
+      :count => 1
+    },
+    :short => {
+      :units => {
+        :seconds => 'sec',
+        :minutes => 'min',
+        :hours => 'hr',
+        :days => 'd',
+        :weeks => 'wk',
+        :months => 'mn',
+        :years => 'yr',
+        :centuries => 'ct',
+        :millenia => 'ml'
+      },
+      :separator => '',
+      :delimiter => ' ',
+      :count => 2
+    },
+    :long => {
+      :units => {
+        :seconds => ['second', 'seconds'],
+        :minutes => ['minute', 'minutes'],
+        :hours => ['hour', 'hours'],
+        :days => ['day', 'days'],
+        :weeks => ['week', 'weeks'],
+        :months => ['month', 'months'],
+        :years => ['year', 'years'],
+        :centuries => ['century', 'centuries'],
+        :millennia => ['millenium', 'millenia'],
+      }
+    }
+  }
 
   # All potential units. Key is the unit name, and the value is its plural form.
   def self.units
@@ -272,57 +319,22 @@ class RelativeTime
     })
   end
 
-  @@syntaxes = {
-    :micro => {
-      :units => {
-        :seconds => 's',
-        :minutes => 'm',
-        :hours => 'h',
-        :days => 'd',
-        :weeks => 'w',
-        :months => 'mn',
-        :years => 'y',
-      },
-      :separator => '',
-      :delimiter => ' ',
-      :count => 1
-    },
-    :medium => {
-      :units => {
-        :seconds => 'sec',
-        :minutes => 'min',
-        :hours => 'hr',
-        :days => 'd',
-        :weeks => 'wk',
-        :months => 'mn',
-        :years => 'yr',
-        :centuries => 'ct',
-        :millenia => 'ml'
-      },
-      :separator => '',
-      :delimiter => ' ',
-      :count => 2
-    },
-    :long => {
-      :units => {
-        :seconds => ['second', 'seconds'],
-        :minutes => ['minute', 'minutes'],
-        :hours => ['hour', 'hours'],
-        :days => ['day', 'days'],
-        :weeks => ['week', 'weeks'],
-        :months => ['month', 'months'],
-        :years => ['year', 'years'],
-        :centuries => ['century', 'centuries'],
-        :millennia => ['millenium', 'millenia'],
-      }
-    }
-  }
-
   # Convert {RelativeTime} to a human-readable format.
+  # @overload to_s(syntax)
+  #   @param [Symbol] syntax The syntax from @@syntaxes to use
+  # @overload to_s(hash)
+  #   @param [Hash] hash The custom hash to use
+  #   @option hash [Hash] :units The unit names to use. See @@syntaxes for examples
+  #   @option hash [Fixnum] :count The maximum number of units to output. `1` would output only the unit of greatest example (such as the hour value in `1.hour 3.minutes 2.seconds`).
+  #   @option hash [String] :separator The separator to use in between a unit and its value
+  #   @options hash [String] :delimiter The delimiter to use in between different unit-value pairs
   # @example
   #   (14.months 49.hours).to_s
   #     => 2 years, 2 months, 3 days, 1 hour
-  def to_s(syntax = :long, average = nil)
+  #   (1.day 3.hours 4.minutes).to_s(:short)
+  #     => 1d 3hr
+  # @see @@syntaxes
+  def to_s(syntax = :long)
     if syntax.is_a? Symbol
       syntax = @@syntaxes.fetch(syntax)
     end
