@@ -129,6 +129,11 @@ describe WallClock do
       WallClock.new(0, 60)
     end.to raise_error(WallClock::TimeOutOfBoundsError)
   end
+
+  it "can be converted to RelativeTime" do
+    WallClock.new(5, 30, 27, :pm).to_relative.should ==
+      (17.hours 30.minutes 27.seconds)
+  end
 end
 
 describe Time do

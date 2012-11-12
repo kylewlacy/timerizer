@@ -460,6 +460,16 @@ class WallClock
   def to_wall
     self
   end
+
+  # Converts {WallClock} to {RelativeTime}
+  # @returns [RelativeTime] {WallClock} as {RelativeTime}
+  # @example
+  #   time = WallClock.new(5, 30, :pm)
+  #   time.to_relative
+  #     => 5 hours, 30 minutes
+  def to_relative
+    @seconds.seconds
+  end
 end
 
 # {Time} class monkeywrenched with {RelativeTime} support.
