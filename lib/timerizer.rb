@@ -450,14 +450,49 @@ class WallClock
 
   def ==(time)
     if time.is_a? WallClock
-      self.seconds == time.seconds
+      self.in_seconds == time.in_seconds
     else
       false
     end
   end
 
-  def seconds
+  def in_seconds
     @seconds
+  end
+
+  def in_minutes
+    @seconds / RelativeTime.units_in_seconds[:minute]
+  end
+
+  def in_hours
+    @seconds / RelativeTime.units_in_seconds[:hour]
+  end
+
+  def second
+    self.to_relative.seconds
+  end
+
+  def minute
+    self.to_relative.minutes
+  end
+
+  def hour(system = :twenty_four_hour)
+    hour = self.to_relative.hours
+    if (system == :twelve_hour) && hour > 12
+      hour - 12
+    elsif (system == :twenty_four_hour)
+      hour
+    else
+      raise ArgumentError, "system should be :twelve_hour or :twenty_four_hour"
+    end
+  end
+
+  def meridiem
+    if self.hour > 12
+      :pm
+    else
+      :am
+    end
   end
 
   # Converts self to {WallClock}
@@ -474,6 +509,17 @@ class WallClock
   #     => 5 hours, 30 minutes
   def to_relative
     @seconds.seconds
+  end
+
+  def to_s(system = :twelve_hour)
+    if(system == :twelve_hour)
+      meridiem = self.meridiem.to_s.upcase
+      "#{self.hour(system)}:#{self.minute}:#{self.second} #{meridiem}"
+    elsif(system == :twenty_four_hour)
+      "#{self.hour(system)}:#{self.minute}:#{self.second}"
+    else
+      raise ArgumentError, "system should be :twelve_hour or :twenty_four_hour"
+    end
   end
 end
 

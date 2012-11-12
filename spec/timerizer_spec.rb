@@ -116,6 +116,24 @@ describe WallClock do
     WallClock.new(:second => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
   end
 
+  it "can return its components" do
+    time = WallClock.new(5, 35, 45, :pm)
+    time.hour.should == 17
+    time.hour(:twenty_four_hour).should == 17
+    time.hour(:twelve_hour).should == 5
+    time.minute.should == 35
+    time.second.should == 45
+    time.meridiem.should == :pm
+
+    time.in_seconds.should == (17*3600) + (35*60) + 45
+    time.in_minutes.should == (17*60) + 35
+    time.in_hours.should == 17
+
+    expect do
+      time.hour(:thirteen_hour)
+    end.to raise_error ArgumentError
+  end
+
   it "raises an error for invalid wallclock times" do
     expect do
       WallClock.new(13, 00, :pm)
@@ -133,6 +151,20 @@ describe WallClock do
   it "can be converted to RelativeTime" do
     WallClock.new(5, 30, 27, :pm).to_relative.should ==
       (17.hours 30.minutes 27.seconds)
+  end
+
+  context "#to_s" do
+    before do
+      @time = WallClock.new(5, 30, 27, :pm)
+    end
+    it "can be converted to a 12-hour time string" do
+      @time.to_s.should == "5:30:27 PM"
+      @time.to_s(:twelve_hour).should == "5:30:27 PM"
+    end
+
+    it "can be converted to a 24-hour time string" do
+      @time.to_s(:twenty_four_hour).should == "17:30:27"
+    end
   end
 end
 
