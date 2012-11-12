@@ -319,6 +319,11 @@ class RelativeTime
     })
   end
 
+  def to_wall
+    raise ArgumentError if @months > 0
+    WallClock.new(:second => @seconds)
+  end
+
   # Convert {RelativeTime} to a human-readable format.
   # @overload to_s(syntax)
   #   @param [Symbol] syntax The syntax from @@syntaxes to use
@@ -437,6 +442,24 @@ class WallClock
   def on(date)
     date.to_date.to_time + @seconds
   end
+
+  def ==(time)
+    if time.is_a? WallClock
+      self.seconds == time.seconds
+    else
+      false
+    end
+  end
+
+  def seconds
+    @seconds
+  end
+
+  # Converts self to {WallClock}
+  # @see Time#to_wall
+  def to_wall
+    self
+  end
 end
 
 # {Time} class monkeywrenched with {RelativeTime} support.
@@ -522,6 +545,17 @@ class Time
   def to_time
     self
   end
+
+  # Converts {Time} to {WallClock}
+  # @return [WallClock] {Time} as {WallClock}
+  # @example
+  #   time = Time.now.to_wall
+  #   Date.tomorrow.at(time)
+  #     => 2000-1-2 13:13:27 -0800
+  #     # "Same time tomorrow?"
+  def to_wall
+    WallClock.new(self.hour, self.min, self.sec)
+  end
 end
 
 # {Date} class monkeywrenched with {RelativeTime} helpers.
@@ -545,6 +579,14 @@ class Date
   # @see Time#to_date
   def to_date
     self
+  end
+
+  # Apply a time to a date
+  # @example yesterday at 5:00
+  #   Date.yesterday.at(WallClock.new(5, 00, :pm))
+  #     => 2000-1-1 17:00:00 -0800
+  def at(time)
+    time.to_wall.on(self)
   end
 
   # Return tomorrow as {Date}.

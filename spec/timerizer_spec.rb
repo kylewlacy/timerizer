@@ -29,6 +29,12 @@ describe RelativeTime do
     end
   end
 
+  context "#to_wall" do
+    it "calculates an equivalent WallClock time" do
+      (5.hours 30.minutes).to_wall.should == WallClock.new(5, 30)
+    end
+  end
+
   context "#to_s" do
     it "converts all units into a string" do
       (1.hour 3.minutes 4.seconds).to_s.should ==
@@ -139,6 +145,11 @@ describe Time do
       Time.since(Date.tomorrow)
     end.should raise_error(Time::TimeIsInTheFutureError)
   end
+
+  it "can be converted to a WallClock time" do
+    time = Time.new(2000, 1, 1, 17, 58, 04)
+    time.to_wall.should == WallClock.new(5, 58, 04, :pm)
+  end
 end
 
 describe Date do
@@ -159,6 +170,12 @@ describe Date do
 
     Date.yesterday.should == yesterday
     Date.tomorrow.should == tomorrow
+  end
+
+  it "returns the time on a given date" do
+     date = Date.new(2000, 1, 1)
+     time = WallClock.new(5, 00, :pm)
+     date.at(time).should == Time.new(2000, 1, 1, 17)
   end
 end
 
