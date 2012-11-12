@@ -33,16 +33,22 @@ describe RelativeTime do
     it "converts all units into a string" do
       (1.hour 3.minutes 4.seconds).to_s.should ==
         "1 hour, 3 minutes, 4 seconds"
+      (1.year 3.months 4.days).to_s(:long).should ==
+        "1 year, 3 months, 4 days"
     end
 
     it "converts units into a micro syntax" do
       (1.hour 3.minutes 4.seconds).to_s(:micro).should ==
         "1h"
+      (1.year 3.months 4.days).to_s(:micro).should ==
+        "1y"
     end
 
     it "converts units into a medium syntax" do
       (1.hour 3.minutes 4.seconds).to_s(:medium).should ==
         "1hr 3min"
+      (1.year 3.months 4.days).to_s(:medium).should ==
+        "1yr 3mn"
     end
   end
 

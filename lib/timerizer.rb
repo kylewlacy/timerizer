@@ -272,10 +272,6 @@ class RelativeTime
     })
   end
 
-  # Convert {RelativeTime} to a human-readable format.
-  # @example
-  #   (14.months 49.hours).to_s
-  #     => 2 years, 2 months, 3 days, 1 hour
   @@syntaxes = {
     :micro => {
       :units => {
@@ -285,9 +281,7 @@ class RelativeTime
         :days => 'd',
         :weeks => 'w',
         :months => 'mn',
-        :years => 'yr',
-        :centuries => 'ct',
-        :millennia => 'ml'
+        :years => 'y',
       },
       :separator => '',
       :delimiter => ' ',
@@ -298,7 +292,12 @@ class RelativeTime
         :seconds => 'sec',
         :minutes => 'min',
         :hours => 'hr',
-        :days => 'd'
+        :days => 'd',
+        :weeks => 'wk',
+        :months => 'mn',
+        :years => 'yr',
+        :centuries => 'ct',
+        :millenia => 'ml'
       },
       :separator => '',
       :delimiter => ' ',
@@ -318,7 +317,12 @@ class RelativeTime
       }
     }
   }
-  def to_s(syntax = :long)
+
+  # Convert {RelativeTime} to a human-readable format.
+  # @example
+  #   (14.months 49.hours).to_s
+  #     => 2 years, 2 months, 3 days, 1 hour
+  def to_s(syntax = :long, average = nil)
     if syntax.is_a? Symbol
       syntax = @@syntaxes.fetch(syntax)
     end
@@ -336,6 +340,7 @@ class RelativeTime
     units.each do |unit, (singular, plural)|
       if count < syntax.fetch(:count)
         time = self.respond_to?(unit) ? self.send(unit) : 0
+
         if time > 1 && !plural.nil?
           times << [time, plural]
           count += 1
