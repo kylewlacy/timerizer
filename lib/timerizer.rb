@@ -60,7 +60,7 @@ class RelativeTime
   #   @option units [Fixnum] :months The number of months
   # @overload new(count, unit)
   #   @param [Fixnum] count The number of units to initialize with
-  #   @param [Symbol] unit The unit to initialize. See {@@units}
+  #   @param [Symbol] unit The unit to initialize. See {RelativeTime#units}
   def initialize(count = 0, unit = :second)
     if count.is_a? Hash
       @seconds = count[:seconds] || 0
@@ -312,9 +312,11 @@ class Wallclock
   #   @param [Symbol] meridiem The meridiem to initialize with (:am or :pm)
   def initialize(hour = 0, minute = 0, second = 0, meridiem = :am)
     if hour.is_a?(Hash)
-      second = hour[:second] || 0
-      minute = hour[:minute] || 0
-      hour = hour[:hour] || 0
+      units = hour
+
+      second = units[:second] || 0
+      minute = units[:minute] || 0
+      hour = units[:hour] || 0
     else
       if second.is_a?(String) || second.is_a?(Symbol)
         meridiem = second
@@ -480,7 +482,7 @@ end
 # @example
 #   5.minutes
 #     => 5 minutes
-# @see RelativeTime @@units
+# @see {RelativeTime#units}
 class Fixnum
   units  = RelativeTime.class_variable_get(:@@units)
   units.each do |unit, plural|
