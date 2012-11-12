@@ -448,6 +448,8 @@ class WallClock
     date.to_date.to_time + @seconds
   end
 
+  # Comparse two {WallClock}s.
+  # @return [Boolean] True if the WallClocks are identical
   def ==(time)
     if time.is_a? WallClock
       self.in_seconds == time.in_seconds
@@ -456,26 +458,39 @@ class WallClock
     end
   end
 
+  # Get the time of the WallClock, in seconds
+  # @return [Fixnum] The total time of the WallClock, in seconds
   def in_seconds
     @seconds
   end
 
+  # Get the time of the WallClock, in minutes
+  # @return [Fixnum] The total time of the WallClock, in minutes
   def in_minutes
     @seconds / RelativeTime.units_in_seconds[:minute]
   end
 
+  # Get the time of the WallClock, in hours
+  # @return [Fixnum] The total time of the WallClock, in hours
   def in_hours
     @seconds / RelativeTime.units_in_seconds[:hour]
   end
 
+  # Get the second of the WallClock.
+  # @return [Fixnum] The second component of the WallClock
   def second
     self.to_relative.seconds
   end
 
+  # Get the minute of the WallClock.
+  # @return [Fixnum] The minute component of the WallClock
   def minute
     self.to_relative.minutes
   end
 
+  # Get the hour of the WallClock.
+  # @param [Symbol] system The houring system to use (either `:twelve_hour` or `:twenty_four_hour`; default `:twenty_four_hour`)
+  # @return [Fixnum] The hour component of the WallClock
   def hour(system = :twenty_four_hour)
     hour = self.to_relative.hours
     if (system == :twelve_hour) && hour > 12
@@ -487,6 +502,8 @@ class WallClock
     end
   end
 
+  # Get the meridiem of the WallClock.
+  # @return [Symbol] The meridiem (either `:am` or `:pm`)
   def meridiem
     if self.hour > 12
       :pm
@@ -511,6 +528,15 @@ class WallClock
     @seconds.seconds
   end
 
+  # Convert {WallClock} to a human-readable format.
+  # @param [Symbol] system The hour system to use (`:twelve_hour` or `:twenty_four_hour`; default `:twelve_hour`)
+  # @example
+  #   time = WallClock.new(5, 37, :pm)
+  #   time.to_s
+  #     => "5:37:00 PM"
+  #   time.to_s(:twenty_four_hour)
+  #     => "17:37:00"
+  # @raise ArgumentError Argument isn't a proper system
   def to_s(system = :twelve_hour)
     if(system == :twelve_hour)
       meridiem = self.meridiem.to_s.upcase
