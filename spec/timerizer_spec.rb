@@ -29,6 +29,23 @@ describe RelativeTime do
     end
   end
 
+  context "#to_s" do
+    it "converts all units into a string" do
+      (1.hour 3.minutes 4.seconds).to_s.should ==
+        "1 hour, 3 minutes, 4 seconds"
+    end
+
+    it "converts units into a micro syntax" do
+      (1.hour 3.minutes 4.seconds).to_s(:micro).should ==
+        "1h"
+    end
+
+    it "converts units into a medium syntax" do
+      (1.hour 3.minutes 4.seconds).to_s(:medium).should ==
+        "1hr 3min"
+    end
+  end
+
   it "can average from second units to month units" do
     five_weeks = {
       :seconds => 3024000,

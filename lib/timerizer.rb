@@ -276,17 +276,79 @@ class RelativeTime
   # @example
   #   (14.months 49.hours).to_s
   #     => 2 years, 2 months, 3 days, 1 hour
-  def to_s
+  @@syntaxes = {
+    :micro => {
+      :units => {
+        :seconds => 's',
+        :minutes => 'm',
+        :hours => 'h',
+        :days => 'd',
+        :weeks => 'w',
+        :months => 'mn',
+        :years => 'yr',
+        :centuries => 'ct',
+        :millennia => 'ml'
+      },
+      :separator => '',
+      :delimiter => ' ',
+      :count => 1
+    },
+    :medium => {
+      :units => {
+        :seconds => 'sec',
+        :minutes => 'min',
+        :hours => 'hr',
+        :days => 'd'
+      },
+      :separator => '',
+      :delimiter => ' ',
+      :count => 2
+    },
+    :long => {
+      :units => {
+        :seconds => ['second', 'seconds'],
+        :minutes => ['minute', 'minutes'],
+        :hours => ['hour', 'hours'],
+        :days => ['day', 'days'],
+        :weeks => ['week', 'weeks'],
+        :months => ['month', 'months'],
+        :years => ['year', 'years'],
+        :centuries => ['century', 'centuries'],
+        :millennia => ['millenium', 'millenia'],
+      }
+    }
+  }
+  def to_s(syntax = :long)
+    if syntax.is_a? Symbol
+      syntax = @@syntaxes.fetch(syntax)
+    end
+
+    raise ArgumentError unless syntax.is_a? Hash
     times = []
 
-    @@units.each do |unit, plural|
-      time = self.respond_to?(plural) ? self.send(plural) : 0
-      times << [time, (time != 1) ? plural : unit] if time > 0
+    if syntax[:count].nil? || syntax[:count] == :all
+      syntax[:count] = @@units.count
+    end
+    units = syntax.fetch(:units)
+
+    count = 0
+    units = Hash[units.to_a.reverse]
+    units.each do |unit, (singular, plural)|
+      if count < syntax.fetch(:count)
+        time = self.respond_to?(unit) ? self.send(unit) : 0
+        if time > 1 && !plural.nil?
+          times << [time, plural]
+          count += 1
+        elsif time > 0
+          times << [time, singular]
+          count += 1
+        end
+      end
     end
 
     times.map do |time|
-      time.join(' ')
-    end.reverse.join(', ')
+      time.join(syntax[:separator] || ' ')
+    end.join(syntax[:delimiter] || ', ')
   end
 end
 
