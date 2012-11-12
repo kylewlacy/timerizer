@@ -154,7 +154,7 @@ class RelativeTime
   # @param [Time] time The initial time.
   # @return [Time] The difference between the current RelativeTime and the given time
   # @example 5 hours before January 1st, 2000 at noon
-  #   5.minutes.before(Time.now(2000, 1, 1, 12, 00, 00))
+  #   5.minutes.before(Time.new(2000, 1, 1, 12, 00, 00))
   #     => 2000-01-01 11:55:00 -0800
   # @see #ago
   # @see #after
@@ -327,12 +327,14 @@ class RelativeTime
   #   @option hash [Hash] :units The unit names to use. See @@syntaxes for examples
   #   @option hash [Fixnum] :count The maximum number of units to output. `1` would output only the unit of greatest example (such as the hour value in `1.hour 3.minutes 2.seconds`).
   #   @option hash [String] :separator The separator to use in between a unit and its value
-  #   @options hash [String] :delimiter The delimiter to use in between different unit-value pairs
+  #   @option hash [String] :delimiter The delimiter to use in between different unit-value pairs
   # @example
   #   (14.months 49.hours).to_s
   #     => 2 years, 2 months, 3 days, 1 hour
   #   (1.day 3.hours 4.minutes).to_s(:short)
   #     => 1d 3hr
+  # @raise KeyError Symbol argument isn't in @@syntaxes
+  # @raise ArgumentError Argument isn't a hash (if not a symbol)
   # @see @@syntaxes
   def to_s(syntax = :long)
     if syntax.is_a? Symbol
@@ -383,12 +385,13 @@ class WallClock
   # @overload new(hour, minute, meridiem)
   #   @param [Fixnum] hour The hour to initialize with
   #   @param [Fixnum] minute The minute to initialize with
-  #   @param [Symbol] meridiem The meridiem to initialize with (AM or PM)
+  #   @param [Symbol] meridiem The meridiem to initialize with (`:am` or `:pm`)
   # @overload new(hour, minute, second, meridiem)
   #   @param [Fixnum] hour The hour to initialize with
   #   @param [Fixnum] minute The minute to initialize with
   #   @param [Fixnum] second The second to initialize with
-  #   @param [Symbol] meridiem The meridiem to initialize with (:am or :pm)
+  #   @param [Symbol] meridiem The meridiem to initialize with (`:am` or `:pm`)
+  # @raise InvalidMeridiemError Meridiem is not `:am` or `:pm`
   def initialize(hour = 0, minute = 0, second = 0, meridiem = :am)
     if hour.is_a?(Hash)
       units = hour
