@@ -64,16 +64,14 @@ class RelativeTime
   def initialize(count = 0, unit = :second)
     if count.is_a? Hash
       units = count
-
-      @seconds = units[:seconds] || 0
-      @months = units[:months] || 0
+      units.default = 0
+      @seconds, @months = units.values_at(:seconds, :months)
     else
-      @seconds = 0
-      @months = 0
+      @seconds = @months = 0
 
-      if(@@in_seconds.has_key?(unit))
+      if @@in_seconds.has_key?(unit)
         @seconds = count * @@in_seconds.fetch(unit)
-      elsif(@@in_months.has_key?(unit))
+      elsif @@in_months.has_key?(unit)
         @months = count * @@in_months.fetch(unit)
       end
     end
@@ -123,7 +121,7 @@ class RelativeTime
       new_month += 12
       new_year -= 1
     end
-    if(Date.valid_date?(new_year, new_month, time.day))
+    if Date.valid_date?(new_year, new_month, time.day)
       new_day = time.day
     else
       new_day = Date.new(new_year, new_month).days_in_month
@@ -156,7 +154,7 @@ class RelativeTime
       new_year += 1
       new_month -= 12
     end
-    if(Date.valid_date?(new_year, new_month, time.day))
+    if Date.valid_date?(new_year, new_month, time.day)
       new_day = time.day
     else
       new_day = Date.new(new_year, new_month).days_in_month
@@ -182,9 +180,9 @@ class RelativeTime
     superior_unit = @@units.keys.index(unit) + 1
 
     define_method(in_method) do
-      if(@@in_seconds.has_key?(unit))
+      if @@in_seconds.has_key?(unit)
         @seconds / @@in_seconds[unit]
-      elsif(@@in_months.has_key?(unit))
+      elsif @@in_months.has_key?(unit)
         @months / @@in_months[unit]
       end
     end
@@ -194,7 +192,7 @@ class RelativeTime
       count_superior = @@units.keys[superior_unit]
 
       time = self.send(in_method)
-      if(@@units.length > superior_unit)
+      if @@units.length > superior_unit
         time -= self.send(in_superior).send(count_superior).send(in_method)
       end
       time
@@ -366,7 +364,7 @@ class Time
 
   add = instance_method(:+)
   define_method(:+) do |time|
-    if(time.class == RelativeTime)
+    if time.is_a? RelativeTime
       time.after(self)
     else
       add.bind(self).(time)
@@ -375,7 +373,7 @@ class Time
 
   subtract = instance_method(:-)
   define_method(:-) do |time|
-    if(time.class == RelativeTime)
+    if time.is_a? RelativeTime
       time.before(self)
     else
       subtract.bind(self).(time)
@@ -486,8 +484,7 @@ end
 #     => 5 minutes
 # @see {RelativeTime#units}
 class Fixnum
-  units  = RelativeTime.class_variable_get(:@@units)
-  units.each do |unit, plural|
+  RelativeTime.units.each do |unit, plural|
     define_method(unit) do |added_time = RelativeTime.new|
       time = RelativeTime.new(self, unit)
       time + added_time
