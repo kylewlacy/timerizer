@@ -319,6 +319,11 @@ class RelativeTime
     })
   end
 
+  # Converts {RelativeTime} to {WallClock}
+  # @return [WallClock] {RelativeTime} as {WallClock}
+  # @example
+  #   (17.hours 30.minutes).to_wall
+  #     # => 5:30:00 PM
   def to_wall
     raise WallClock::TimeOutOfBoundsError if @months > 0
     WallClock.new(:second => @seconds)
@@ -462,7 +467,7 @@ class WallClock
   end
 
   # Converts {WallClock} to {RelativeTime}
-  # @returns [RelativeTime] {WallClock} as {RelativeTime}
+  # @return [RelativeTime] {WallClock} as {RelativeTime}
   # @example
   #   time = WallClock.new(5, 30, :pm)
   #   time.to_relative
