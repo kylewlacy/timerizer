@@ -15,6 +15,11 @@ describe RelativeTime do
       5.minutes.after(@time).should == Time.new(2000, 1, 1, 3, 50, 00)
       5.months.after(@time).should == Time.new(2000, 6, 1, 3, 45, 00)
     end
+
+    it "properly handles large periods of time" do
+      65.months.before(@time).should == Time.new(1994, 8, 1, 3, 45, 00)
+      65.months.after(@time).should == Time.new(2005, 6, 1, 3, 45, 00)
+    end
   end
 
   context "given an odd time case" do
