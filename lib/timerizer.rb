@@ -226,24 +226,33 @@ class RelativeTime
     count_method = plural
     superior_unit = @@units.keys.index(unit) + 1
 
-    define_method(in_method) do
-      if @@in_seconds.has_key?(unit)
-        @seconds / @@in_seconds[unit]
-      elsif @@in_months.has_key?(unit)
-        @months / @@in_months[unit]
-      end
+    if @@in_seconds.has_key? unit
+      class_eval %Q"
+        def #{in_method}
+          @seconds / #{@@in_seconds[unit]}
+        end
+      "
+    elsif @@in_months.has_key? unit
+      class_eval %Q"
+        def #{in_method}
+          @months / #{@@in_months[unit]}
+        end
+      "
     end
 
-    define_method(count_method) do
-      in_superior = "in_#{@@units.values[superior_unit]}"
-      count_superior = @@units.keys[superior_unit]
+    in_superior = "in_#{@@units.values[superior_unit]}"
+    count_superior = @@units.keys[superior_unit]
 
-      time = self.send(in_method)
-      if @@units.length > superior_unit
-        time -= self.send(in_superior).send(count_superior).send(in_method)
+
+    class_eval %Q"
+      def #{count_method}
+        time = self.#{in_method}
+        if @@units.length > #{superior_unit}
+          time -= self.#{in_superior}.#{count_superior}.#{in_method}
+        end
+        time
       end
-      time
-    end
+    "
   end
 
   # Average second-based units to month-based units.
