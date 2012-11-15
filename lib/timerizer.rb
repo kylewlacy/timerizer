@@ -162,8 +162,8 @@ class RelativeTime
   def before(time)
     time = time.to_time - @seconds
 
-    new_month = time.month - @months
-    new_year = time.year
+    new_month = time.month - self.months
+    new_year = time.year - self.years
     while new_month < 1
       new_month += 12
       new_year -= 1
@@ -195,8 +195,8 @@ class RelativeTime
   def after(time)
     time = time.to_time + @seconds
 
-    new_year = time.year
-    new_month = time.month + @months
+    new_year = time.year + self.years
+    new_month = time.month + self.months
     while new_month > 12
       new_year += 1
       new_month -= 12
