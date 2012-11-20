@@ -111,6 +111,11 @@ describe RelativeTime do
 end
 
 describe WallClock do
+  it "can be created" do
+    WallClock.new(12, 30, :pm)
+    WallClock.new(23, 30)
+  end
+
   it "can apply a time on a day" do
     date = Date.new(2000, 1, 1)
     WallClock.new(9, 00, :pm).on(date).should == Time.new(2000, 1, 1, 21)

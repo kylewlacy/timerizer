@@ -444,7 +444,7 @@ class WallClock
         raise TimeOutOfBoundsError
       end
 
-      hour += 12 if meridiem == :pm
+      hour += 12 if (meridiem == :pm and !(hour == 12))
     end
 
     @seconds =
