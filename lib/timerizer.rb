@@ -513,8 +513,14 @@ class WallClock
   # @return [Fixnum] The hour component of the WallClock
   def hour(system = :twenty_four_hour)
     hour = self.to_relative.hours
-    if (system == :twelve_hour) && hour > 12
-      hour - 12
+    if system == :twelve_hour
+      if hour == 0
+        12
+      elsif hour > 12
+        hour - 12
+      else
+        hour
+      end
     elsif (system == :twenty_four_hour)
       hour
     else
@@ -525,7 +531,7 @@ class WallClock
   # Get the meridiem of the WallClock.
   # @return [Symbol] The meridiem (either `:am` or `:pm`)
   def meridiem
-    if self.hour > 12
+    if self.hour > 12 || self.hour == 0
       :pm
     else
       :am
@@ -564,11 +570,12 @@ class WallClock
   #     => "17:37:00"
   # @raise ArgumentError Argument isn't a proper system
   def to_s(system = :twelve_hour)
+    pad = "%02d"
     if(system == :twelve_hour)
       meridiem = self.meridiem.to_s.upcase
-      "#{self.hour(system)}:#{self.minute}:#{self.second} #{meridiem}"
+      "#{self.hour(system)}:#{pad % self.minute}:#{pad % self.second} #{meridiem}"
     elsif(system == :twenty_four_hour)
-      "#{self.hour(system)}:#{self.minute}:#{self.second}"
+      "#{self.hour(system)}:#{pad % self.minute}:#{pad % self.second}"
     else
       raise ArgumentError, "system should be :twelve_hour or :twenty_four_hour"
     end
