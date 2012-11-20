@@ -116,9 +116,14 @@ describe WallClock do
     WallClock.new(9, 00, :pm).on(date).should == Time.new(2000, 1, 1, 21)
   end
 
-  it "can be initialize from a hash of values" do
+  it "can be initialized from a hash of values" do
     date = Date.new(2000, 1, 1)
     WallClock.new(:second => 30*60).on(date).should == Time.new(2000, 1, 1, 0, 30)
+  end
+
+  it "can be converted to an from an integer" do
+    time = WallClock.new(21, 00)
+    WallClock.new(time.to_i).should == WallClock.new(9, 00, :pm)
   end
 
   it "can return its components" do

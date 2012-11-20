@@ -414,11 +414,18 @@ class WallClock
   #   @param [Fixnum] minute The minute to initialize with
   #   @param [Fixnum] second The second to initialize with
   #   @param [Symbol] meridiem The meridiem to initialize with (`:am` or `:pm`)
+  # @overload new(seconds)
+  #   @param [Fixnum] seconds The number of seconds to initialize with (for use with #to_i)
   # @raise InvalidMeridiemError Meridiem is not `:am` or `:pm`
-  def initialize(hour = 0, minute = 0, second = 0, meridiem = :am)
-    if hour.is_a?(Hash)
+  def initialize(hour = nil, minute = nil, second = 0, meridiem = :am)
+    units = nil
+    if hour.is_a?(Fixnum) && minute.nil?
+      units = {:second => hour}
+    elsif hour.is_a?(Hash)
       units = hour
+    end
 
+    if !units.nil?
       second = units[:second] || 0
       minute = units[:minute] || 0
       hour = units[:hour] || 0
@@ -539,6 +546,12 @@ class WallClock
   #     => 5 hours, 30 minutes
   def to_relative
     @seconds.seconds
+  end
+
+  # Get the time of the WallClock in a more portable format (for a database, for example)
+  # @see #in_seconds
+  def to_i
+    self.in_seconds
   end
 
   # Convert {WallClock} to a human-readable format.
