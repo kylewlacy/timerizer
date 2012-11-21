@@ -184,16 +184,27 @@ describe WallClock do
     it "can be converted to a 12-hour time string" do
       @time.to_s.should == "5:30:27 PM"
       @time.to_s(:twelve_hour).should == "5:30:27 PM"
+      @time.to_s(:twelve_hour, :use_seconds => false).should == "5:30 PM"
+      @time.to_s(:twelve_hour, :include_meridiem => false).should == "5:30:27"
+      @time.to_s(
+        :twelve_hour,
+        :include_meridiem => false,
+        :use_seconds => false
+      ).should == "5:30"
     end
 
     it "can be converted to a 24-hour time string" do
       @time.to_s(:twenty_four_hour).should == "17:30:27"
+      @time.to_s(:twenty_four_hour, :use_seconds => false).should == "17:30"
     end
 
     it "zero-pads units" do
       time = WallClock.new(0, 00, 00)
       time.to_s(:twelve_hour).should == "12:00:00 PM"
       time.to_s(:twenty_four_hour).should == "0:00:00"
+
+      time.to_s(:twelve_hour, :use_seconds => false).should == "12:00 PM"
+      time.to_s(:twenty_four_hour, :use_seconds => false).should == "0:00"
     end
   end
 end

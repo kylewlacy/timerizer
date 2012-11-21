@@ -577,25 +577,37 @@ class WallClock
 
   # Convert {WallClock} to a human-readable format.
   # @param [Symbol] system The hour system to use (`:twelve_hour` or `:twenty_four_hour`; default `:twelve_hour`)
+  # @param [Hash] options Extra options for the string to use
+  # @option options [Boolean] :use_seconds Whether or not to include seconds in the conversion to a string
+  # @option options [Boolean] :include_meridian Whether or not to include the meridian for a twelve-hour time
   # @example
-  #   time = WallClock.new(5, 37, :pm)
+  #   time = WallClock.new(5, 37, 41, :pm)
   #   time.to_s
-  #     => "5:37:00 PM"
-  #   time.to_s(:twenty_four_hour)
-  #     => "17:37:00"
+  #     => "5:37:41 PM"
+  #   time.to_s(:twenty_four_hour, :use_seconds => true)
+  #     => "17:37:41"
+  #   time.to_s(:twelve_hour, :use_seconds => false, :include_meridiem => false)
+  #     => "5:37"
+  #   time.to_s(:twenty_four_hour, :use_seconds =>false)
+  #     => "17:37"
   # @raise ArgumentError Argument isn't a proper system
-  def to_s(system = :twelve_hour)
+  def to_s(system = :twelve_hour, options = {})
+    options  = {:use_seconds => true, :include_meridiem => true}.merge(options)
     pad = "%02d"
     meridiem = self.meridiem.to_s.upcase
     hour = self.hour(system)
     minute = pad % self.minute
     second = pad % self.second
 
-    string = [hour, minute, second].join(':')
+    string = [hour, minute].join(':')
+    if options[:use_seconds]
+      string = [string, second].join(':')
+    end
 
-    if system == :twelve_hour
-      [string, meridiem].join(' ')
-    elsif system == :twenty_four_hour
+    case system
+    when :twelve_hour
+      options[:include_meridiem] ? [string, meridiem].join(' ') : string
+    when :twenty_four_hour
       string
     else
       raise ArgumentError, "system should be :twelve_hour or :twenty_four_hour"
