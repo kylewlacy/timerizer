@@ -227,13 +227,13 @@ class RelativeTime
     superior_unit = @@units.keys.index(unit) + 1
 
     if @@in_seconds.has_key? unit
-      class_eval %Q"
+      class_eval "
         def #{in_method}
           @seconds / #{@@in_seconds[unit]}
         end
       "
     elsif @@in_months.has_key? unit
-      class_eval %Q"
+      class_eval "
         def #{in_method}
           @months / #{@@in_months[unit]}
         end
@@ -244,7 +244,7 @@ class RelativeTime
     count_superior = @@units.keys[superior_unit]
 
 
-    class_eval %Q"
+    class_eval "
       def #{count_method}
         time = self.#{in_method}
         if @@units.length > #{superior_unit}
@@ -624,21 +624,45 @@ class Time
   # @see #since
   class TimeIsInTheFutureError < ArgumentError; end
 
-  add = instance_method(:+)
-  define_method(:+) do |time|
-    if time.is_a? RelativeTime
-      time.after(self)
-    else
-      add.bind(self).(time)
+  class << self
+    alias_method :classic_new, :new
+
+    def new(*args)
+      begin
+        Time.classic_new(*args)
+      rescue ArgumentError
+        if args.empty?
+          Time.new
+        else
+          Time.local(*args)
+        end
+      end
     end
   end
 
-  subtract = instance_method(:-)
-  define_method(:-) do |time|
+  # def initialize(*args)
+  #   self.classic_new(args)
+  #   # if args.count == 0
+
+  #   # else
+  #   # end
+  # end
+
+  alias_method :add, :+
+  def +(time)
+    if time.is_a? RelativeTime
+      time.after(self)
+    else
+      self.add(time)
+    end
+  end
+
+  alias_method :subtract, :-
+  def -(time)
     if time.is_a? RelativeTime
       time.before(self)
     else
-      subtract.bind(self).(time)
+      self.subtract(time)
     end
   end
 
@@ -766,10 +790,12 @@ end
 # @see {RelativeTime#units}
 class Fixnum
   RelativeTime.units.each do |unit, plural|
-    define_method(unit) do |added_time = RelativeTime.new|
-      time = RelativeTime.new(self, unit)
-      time + added_time
-    end
+    class_eval "
+      def #{unit}(added_time = RelativeTime.new)
+        time = RelativeTime.new(self, :#{unit})
+        time + added_time unless added_time.nil?
+      end
+    "
     alias_method(plural, unit)
   end
 end
