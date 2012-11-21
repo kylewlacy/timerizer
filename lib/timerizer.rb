@@ -457,6 +457,21 @@ class WallClock
     end
   end
 
+  # Takes a string and turns it into a WallClock time
+  # @param [String] string The string to convert
+  # @return [WallClock] The time as a WallClock
+  # @example
+  #   WallClock.from_string("10:30 PM")
+  #     # => 10:30:00 PM
+  #   WallClock.from_string("13:01:23")
+  #     # => 1:01:23 PM
+  # @see #to_s
+  def self.from_string(string)
+    time, meridiem = string.split(' ', 2)
+    hour, minute, second = time.split(':', 3)
+    WallClock.new(hour.to_i, minute.to_i, second.to_i || 0, meridiem || :am)
+  end
+
   # Returns the time of the WallClock on a date
   # @param [Date] date The date to apply the time on
   # @return [Time] The time after the given date

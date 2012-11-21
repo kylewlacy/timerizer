@@ -116,6 +116,14 @@ describe WallClock do
     WallClock.new(23, 30)
   end
 
+  it "can be created from a string" do
+    WallClock.from_string("9:00 PM").should == WallClock.new(9, 00, :pm)
+    WallClock.from_string("13:00").should == WallClock.new(13, 00)
+    WallClock.from_string("12:00 PM").should == WallClock.new(12, 00, :pm)
+    WallClock.from_string("11:00:01 PM").should == WallClock.new(11, 00, 01, :pm)
+    WallClock.from_string("23:34:45").should == WallClock.new(23, 34, 45)
+  end
+
   it "can apply a time on a day" do
     date = Date.new(2000, 1, 1)
     WallClock.new(9, 00, :pm).on(date).should == Time.new(2000, 1, 1, 21)
