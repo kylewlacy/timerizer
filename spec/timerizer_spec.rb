@@ -1,4 +1,4 @@
-require_relative '../lib/timerizer'
+require './lib/timerizer'
 
 describe RelativeTime do
   context "given an existing time" do
@@ -214,6 +214,10 @@ describe Time do
     time = Time.new(2000, 1, 1, 3, 45, 00)
     (time + 5.minutes).should == Time.new(2000, 1, 1, 3, 50, 00)
     (time - 5.minutes).should == Time.new(2000, 1, 1, 3, 40, 00)
+  end
+
+  it "maintains compatibility with adding times together" do
+    (Time.new(2000, 1, 1, 3, 50, 00) + 1).should == Time.new(2000, 1, 1, 3, 50, 01)
   end
 
   it "can be converted to a Date object" do

@@ -178,7 +178,12 @@ class RelativeTime
       new_year, new_month, new_day,
       time.hour, time.min, time.sec
     )
-    Time.at(new_time.to_i, time.nsec/1000)
+
+    if time.respond_to?(:nsec)
+      Time.at(new_time.to_i, time.nsec/1000) if time.respond_to?(:nsec)
+    else
+      new_time
+    end
   end
 
   # Return the time between the RelativeTime and the current time.
@@ -212,7 +217,12 @@ class RelativeTime
       new_year, new_month, new_day,
       time.hour, time.min, time.sec
     )
-    Time.at(new_time.to_i, time.nsec/1000.0)
+
+    if time.respond_to?(:nsec)
+      Time.at(new_time.to_i, time.nsec/1000) if time.respond_to?(:nsec)
+    else
+      new_time
+    end
   end
 
   # Return the time after the current time and the RelativeTime.
@@ -435,7 +445,7 @@ class WallClock
         second = 0
       end
 
-      meridiem = meridiem.downcase.to_sym
+      meridiem = meridiem.to_s.downcase.to_sym
       if !(meridiem == :am || meridiem == :pm)
         raise InvalidMeridiemError
       elsif meridiem == :pm && hour > 12
@@ -760,6 +770,10 @@ class Date
   # @see Time#to_date
   def to_date
     self
+  end
+
+  def to_time
+    Time.new(self.year, self.month, self.day)
   end
 
   # Apply a time to a date
