@@ -586,11 +586,17 @@ class WallClock
   # @raise ArgumentError Argument isn't a proper system
   def to_s(system = :twelve_hour)
     pad = "%02d"
-    if(system == :twelve_hour)
-      meridiem = self.meridiem.to_s.upcase
-      "#{self.hour(system)}:#{pad % self.minute}:#{pad % self.second} #{meridiem}"
-    elsif(system == :twenty_four_hour)
-      "#{self.hour(system)}:#{pad % self.minute}:#{pad % self.second}"
+    meridiem = self.meridiem.to_s.upcase
+    hour = self.hour(system)
+    minute = pad % self.minute
+    second = pad % self.second
+
+    string = [hour, minute, second].join(':')
+
+    if system == :twelve_hour
+      [string, meridiem].join(' ')
+    elsif system == :twenty_four_hour
+      string
     else
       raise ArgumentError, "system should be :twelve_hour or :twenty_four_hour"
     end
