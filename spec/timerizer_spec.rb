@@ -271,7 +271,7 @@ describe Date do
   end
 end
 
-describe Fixnum do
+describe Integer do
   it "makes RelativeTime objects" do
     1.minute.get(:seconds).should == 60
     3.hours.get(:seconds).should == 10800
