@@ -103,10 +103,10 @@ class RelativeTime
   # Initialize a new instance of RelativeTime.
   # @overload new(hash)
   #   @param [Hash] units The base units to initialize with
-  #   @option units [Fixnum] :seconds The number of seconds
-  #   @option units [Fixnum] :months The number of months
+  #   @option units [Integer] :seconds The number of seconds
+  #   @option units [Integer] :months The number of months
   # @overload new(count, unit)
-  #   @param [Fixnum] count The number of units to initialize with
+  #   @param [Integer] count The number of units to initialize with
   #   @param [Symbol] unit The unit to initialize. See {RelativeTime#units}
   def initialize(count = 0, unit = :second)
     if count.is_a? Hash
@@ -138,7 +138,7 @@ class RelativeTime
 
   # Return the number of base units in a RelativeTime.
   # @param [Symbol] unit The unit to return, either :seconds or :months
-  # @return [Fixnum] The requested unit count
+  # @return [Integer] The requested unit count
   # @raise [ArgumentError] Unit requested was not :seconds or :months
   def get(unit)
     if unit == :seconds
@@ -344,7 +344,7 @@ class RelativeTime
   # @overload to_s(hash)
   #   @param [Hash] hash The custom hash to use
   #   @option hash [Hash] :units The unit names to use. See @@syntaxes for examples
-  #   @option hash [Fixnum] :count The maximum number of units to output. `1` would output only the unit of greatest example (such as the hour value in `1.hour 3.minutes 2.seconds`).
+  #   @option hash [Integer] :count The maximum number of units to output. `1` would output only the unit of greatest example (such as the hour value in `1.hour 3.minutes 2.seconds`).
   #   @option hash [String] :separator The separator to use in between a unit and its value
   #   @option hash [String] :delimiter The delimiter to use in between different unit-value pairs
   # @example
@@ -402,24 +402,24 @@ class WallClock
   # Initialize a new instance of WallClock
   # @overload new(hash)
   #   @param [Hash] units The units to initialize with
-  #   @option units [Fixnum] :hour The hour to initialize with
-  #   @option units [Fixnum] :minute The minute to initialize with
-  #   @option units [Fixnum] :second The second to initialize with
+  #   @option units [Integer] :hour The hour to initialize with
+  #   @option units [Integer] :minute The minute to initialize with
+  #   @option units [Integer] :second The second to initialize with
   # @overload new(hour, minute, meridiem)
-  #   @param [Fixnum] hour The hour to initialize with
-  #   @param [Fixnum] minute The minute to initialize with
+  #   @param [Integer] hour The hour to initialize with
+  #   @param [Integer] minute The minute to initialize with
   #   @param [Symbol] meridiem The meridiem to initialize with (`:am` or `:pm`)
   # @overload new(hour, minute, second, meridiem)
-  #   @param [Fixnum] hour The hour to initialize with
-  #   @param [Fixnum] minute The minute to initialize with
-  #   @param [Fixnum] second The second to initialize with
+  #   @param [Integer] hour The hour to initialize with
+  #   @param [Integer] minute The minute to initialize with
+  #   @param [Integer] second The second to initialize with
   #   @param [Symbol] meridiem The meridiem to initialize with (`:am` or `:pm`)
   # @overload new(seconds)
-  #   @param [Fixnum] seconds The number of seconds to initialize with (for use with #to_i)
+  #   @param [Integer] seconds The number of seconds to initialize with (for use with #to_i)
   # @raise InvalidMeridiemError Meridiem is not `:am` or `:pm`
   def initialize(hour = nil, minute = nil, second = 0, meridiem = :am)
     units = nil
-    if hour.is_a?(Fixnum) && minute.nil?
+    if hour.is_a?(Integer) && minute.nil?
       units = {:second => hour}
     elsif hour.is_a?(Hash)
       units = hour
@@ -494,38 +494,38 @@ class WallClock
   end
 
   # Get the time of the WallClock, in seconds
-  # @return [Fixnum] The total time of the WallClock, in seconds
+  # @return [Integer] The total time of the WallClock, in seconds
   def in_seconds
     @seconds
   end
 
   # Get the time of the WallClock, in minutes
-  # @return [Fixnum] The total time of the WallClock, in minutes
+  # @return [Integer] The total time of the WallClock, in minutes
   def in_minutes
     @seconds / RelativeTime.units_in_seconds[:minute]
   end
 
   # Get the time of the WallClock, in hours
-  # @return [Fixnum] The total time of the WallClock, in hours
+  # @return [Integer] The total time of the WallClock, in hours
   def in_hours
     @seconds / RelativeTime.units_in_seconds[:hour]
   end
 
   # Get the second of the WallClock.
-  # @return [Fixnum] The second component of the WallClock
+  # @return [Integer] The second component of the WallClock
   def second
     self.to_relative.seconds
   end
 
   # Get the minute of the WallClock.
-  # @return [Fixnum] The minute component of the WallClock
+  # @return [Integer] The minute component of the WallClock
   def minute
     self.to_relative.minutes
   end
 
   # Get the hour of the WallClock.
   # @param [Symbol] system The houring system to use (either `:twelve_hour` or `:twenty_four_hour`; default `:twenty_four_hour`)
-  # @return [Fixnum] The hour component of the WallClock
+  # @return [Integer] The hour component of the WallClock
   def hour(system = :twenty_four_hour)
     hour = self.to_relative.hours
     if system == :twelve_hour
@@ -742,7 +742,7 @@ end
 # {Date} class monkeywrenched with {RelativeTime} helpers.
 class Date
   # Return the number of days in a given month.
-  # @return [Fixnum] Number of days in the month of the {Date}.
+  # @return [Integer] Number of days in the month of the {Date}.
   # @example
   #   Date.new(2000, 2).days_in_month
   #     => 29
@@ -783,12 +783,12 @@ class Date
   end
 end
 
-# Monkeywrenched {Fixnum} class enabled to return {RelativeTime} objects.
+# Monkeywrenched {Integer} class enabled to return {RelativeTime} objects.
 # @example
 #   5.minutes
 #     => 5 minutes
 # @see {RelativeTime#units}
-class Fixnum
+class Integer
   RelativeTime.units.each do |unit, plural|
     class_eval "
       def #{unit}(added_time = RelativeTime.new)
