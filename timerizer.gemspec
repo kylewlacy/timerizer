@@ -3,6 +3,7 @@ version = File.read(File.expand_path('../VERSION', __FILE__)).strip
 Gem::Specification.new do |gem|
   gem.name        = 'timerizer'
   gem.version     = version
+  gem.license     = "MIT"
   gem.summary     = 'Rails time helpers... without the Rails'
   gem.description = 'A simple set of Rails-like time helpers'
   gem.authors     = ['Kyle Lacy']
