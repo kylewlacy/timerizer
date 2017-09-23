@@ -111,6 +111,16 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#in_seconds" do
+    it "converts a `RelativeTime` to seconds" do
+      expect(1.second.in_seconds).to eq(1)
+      expect((10.minutes 3.seconds).in_seconds).to eq((10 * 60) + 3)
+      expect((1.hour 4.minutes).in_seconds).to eq((60 * 60) + (4 * 60))
+      expect(3.days.in_seconds).to eq(3 * 24 * 60 * 60)
+      expect(2.weeks.in_seconds).to eq(2 * 7 * 24 * 60 * 60)
+    end
+  end
+
   it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
