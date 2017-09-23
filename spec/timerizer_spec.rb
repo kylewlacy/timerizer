@@ -90,36 +90,34 @@ RSpec.describe RelativeTime do
     end
   end
 
-  it "can average from second units to month units" do
-    five_weeks = {
-      seconds: 3024000,
-      average: {seconds: 394254, months: 1}
-    }
+  describe "#average" do
+    it "can average from second units to month units" do
+      five_weeks = 5.weeks
+      expect(five_weeks.get(:seconds)).to eq(3_024_000)
 
-    expect(5.weeks.get(:seconds)).to eq(five_weeks[:seconds])
-
-    average = 5.weeks.average!
-    expect(average.get(:seconds)).to eq(five_weeks[:average][:seconds])
-    expect(average.get(:months)).to eq(five_weeks[:average][:months])
+      average = five_weeks.average
+      expect(average.get(:seconds)).to eq(394_254)
+      expect(average.get(:months)).to eq(1)
+    end
   end
 
-  it "can unaverage from month units to second units" do
-    two_months = {
-      months: 2,
-      unaverage: {seconds: 5259492, months: 0}
-    }
+  describe "#unaverage" do
+    it "can unaverage from month units to second units" do
+      expect(2.months.get(:months)).to eq(2)
 
-    expect(2.months.get(:months)).to eq(two_months[:months])
-
-    unaverage = 2.months.unaverage!
-
-    expect(unaverage.get(:seconds)).to eq(two_months[:unaverage][:seconds])
-    expect(unaverage.get(:months)).to eq(two_months[:unaverage][:months])
+      unaverage = 2.months.unaverage!
+      expect(unaverage.get(:seconds)).to eq(5_259_492)
+      expect(unaverage.get(:months)).to eq(0)
+    end
   end
 
-  it "can compare two RelativeTimes" do
+  it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
+
+    expect(1.minute).to eq(60.seconds)
+    expect(1.week).to eq(7.days)
+    expect(12.months).to eq(1.year)
   end
 end
 
