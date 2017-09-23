@@ -1,4 +1,4 @@
-require 'date'
+require "date"
 
 # Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
 class RelativeTime

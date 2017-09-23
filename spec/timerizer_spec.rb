@@ -1,6 +1,6 @@
-require_relative '../lib/timerizer'
+require "spec_helper"
 
-describe RelativeTime do
+RSpec.describe RelativeTime do
   context "given an existing time" do
     before :all do
       @time = Time.new(2000, 1, 1, 3, 45, 00)
