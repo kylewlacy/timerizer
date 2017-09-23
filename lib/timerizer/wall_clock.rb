@@ -28,7 +28,7 @@ class WallClock
   def initialize(hour = nil, minute = nil, second = 0, meridiem = :am)
     units = nil
     if hour.is_a?(Integer) && minute.nil?
-      units = {:second => hour}
+      units = {second: hour}
     elsif hour.is_a?(Hash)
       units = hour
     end
@@ -200,7 +200,7 @@ class WallClock
   #     => "17:37"
   # @raise ArgumentError Argument isn't a proper system
   def to_s(system = :twelve_hour, options = {})
-    options  = {:use_seconds => true, :include_meridiem => true}.merge(options)
+    options  = {use_seconds: true, include_meridiem: true}.merge(options)
     pad = "%02d"
     meridiem = self.meridiem.to_s.upcase
     hour = self.hour(system)

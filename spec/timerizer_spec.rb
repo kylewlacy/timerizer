@@ -92,8 +92,8 @@ RSpec.describe RelativeTime do
 
   it "can average from second units to month units" do
     five_weeks = {
-      :seconds => 3024000,
-      :average => {:seconds => 394254, :months => 1}
+      seconds: 3024000,
+      average: {seconds: 394254, months: 1}
     }
 
     expect(5.weeks.get(:seconds)).to eq(five_weeks[:seconds])
@@ -105,8 +105,8 @@ RSpec.describe RelativeTime do
 
   it "can unaverage from month units to second units" do
     two_months = {
-      :months => 2,
-      :unaverage => {:seconds => 5259492, :months => 0}
+      months: 2,
+      unaverage: {seconds: 5259492, months: 0}
     }
 
     expect(2.months.get(:months)).to eq(two_months[:months])
@@ -148,7 +148,7 @@ RSpec.describe WallClock do
   it "can be initialized from a hash of values" do
     date = Date.new(2000, 1, 1)
     expect(
-      WallClock.new(:second => 30*60).on(date)
+      WallClock.new(second: 30*60).on(date)
     ).to eq(Time.new(2000, 1, 1, 0, 30))
   end
 
@@ -203,14 +203,14 @@ RSpec.describe WallClock do
     it "can be converted to a 12-hour time string" do
       expect(@time.to_s).to eq("5:30:27 PM")
       expect(@time.to_s(:twelve_hour)).to eq("5:30:27 PM")
-      expect(@time.to_s(:twelve_hour, :use_seconds => false)).to eq("5:30 PM")
-      expect(@time.to_s(:twelve_hour, :include_meridiem => false)).to eq("5:30:27")
+      expect(@time.to_s(:twelve_hour, use_seconds: false)).to eq("5:30 PM")
+      expect(@time.to_s(:twelve_hour, include_meridiem: false)).to eq("5:30:27")
 
       expect(
         @time.to_s(
           :twelve_hour,
-          :include_meridiem => false,
-          :use_seconds => false
+          include_meridiem: false,
+          use_seconds: false
         )
       ).to eq("5:30")
     end
@@ -218,7 +218,7 @@ RSpec.describe WallClock do
     it "can be converted to a 24-hour time string" do
       expect(@time.to_s(:twenty_four_hour)).to eq("17:30:27")
       expect(
-        @time.to_s(:twenty_four_hour, :use_seconds => false)
+        @time.to_s(:twenty_four_hour, use_seconds: false)
       ).to eq("17:30")
     end
 
@@ -227,8 +227,8 @@ RSpec.describe WallClock do
       expect(time.to_s(:twelve_hour)).to eq("12:00:00 PM")
       expect(time.to_s(:twenty_four_hour)).to eq("0:00:00")
 
-      expect(time.to_s(:twelve_hour, :use_seconds => false)).to eq("12:00 PM")
-      expect(time.to_s(:twenty_four_hour, :use_seconds => false)).to eq("0:00")
+      expect(time.to_s(:twelve_hour, use_seconds: false)).to eq("12:00 PM")
+      expect(time.to_s(:twenty_four_hour, use_seconds: false)).to eq("0:00")
     end
   end
 end

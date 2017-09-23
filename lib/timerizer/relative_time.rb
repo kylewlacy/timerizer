@@ -1,84 +1,84 @@
 # Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
 class RelativeTime
   @@units = {
-    :second     => :seconds,
-    :minute     => :minutes,
-    :hour       => :hours,
-    :day        => :days,
-    :week       => :weeks,
-    :month      => :months,
-    :year       => :years,
-    :decade     => :decades,
-    :century    => :centuries,
-    :millennium => :millennia
+    second: :seconds,
+    minute: :minutes,
+    hour: :hours,
+    day: :days,
+    week: :weeks,
+    month: :months,
+    year: :years,
+    decade: :decades,
+    century: :centuries,
+    millennium: :millennia
   }
 
   @@in_seconds = {
-    :second => 1,
-    :minute => 60,
-    :hour   => 3600,
-    :day    => 86400,
-    :week   => 604800
+    second: 1,
+    minute: 60,
+    hour: 3600,
+    day: 86400,
+    week: 604800
   }
 
   @@in_months = {
-    :month      => 1,
-    :year       => 12,
-    :decade     => 120,
-    :century    => 1200,
-    :millennium => 12000
+    month: 1,
+    year: 12,
+    decade: 120,
+    century: 1200,
+    millennium: 12000
   }
 
   # Average amount of time in a given unit. Used internally within the {#average} and {#unaverage} methods.
   @@average_seconds = {
-    :month => 2629746,
-    :year  => 31556952
+    month: 2629746,
+    year: 31556952
   }
 
   # Default syntax formats that can be used with #to_s
   # @see #to_s
   @@syntaxes = {
-    :micro => {
-      :units => {
-        :seconds => 's',
-        :minutes => 'm',
-        :hours => 'h',
-        :days => 'd',
-        :weeks => 'w',
-        :months => 'mn',
-        :years => 'y',
+    micro: {
+      units: {
+        seconds: 's',
+        minutes: 'm',
+        hours: 'h',
+        days: 'd',
+        weeks: 'w',
+        months: 'mn',
+        years: 'y',
       },
-      :separator => '',
-      :delimiter => ' ',
-      :count => 1
+      separator: '',
+      delimiter: ' ',
+      count: 1
     },
-    :short => {
-      :units => {
-        :seconds => 'sec',
-        :minutes => 'min',
-        :hours => 'hr',
-        :days => 'd',
-        :weeks => 'wk',
-        :months => 'mn',
-        :years => 'yr',
-        :centuries => 'ct',
-        :millenia => 'ml'
+    short: {
+      units: {
+        seconds: 'sec',
+        minutes: 'min',
+        hours: 'hr',
+        days: 'd',
+        weeks: 'wk',
+        months: 'mn',
+        years: 'yr',
+        centuries: 'ct',
+        millenia: 'ml'
       },
-      :separator => '',
-      :delimiter => ' ',
-      :count => 2
+      separator: '',
+      delimiter: ' ',
+      count: 2
     },
-    :long => {
-      :units => {
-        :seconds => ['second', 'seconds'],
-        :minutes => ['minute', 'minutes'],
-        :hours => ['hour', 'hours'],
-        :days => ['day', 'days'],
-        :weeks => ['week', 'weeks'],
-        :months => ['month', 'months'],
-        :years => ['year', 'years'],
-        :centuries => ['century', 'centuries'],
-        :millennia => ['millenium', 'millenia'],
+    long: {
+      units: {
+        seconds: ['second', 'seconds'],
+        minutes: ['minute', 'minutes'],
+        hours: ['hour', 'hours'],
+        days: ['day', 'days'],
+        weeks: ['week', 'weeks'],
+        months: ['month', 'months'],
+        years: ['year', 'years'],
+        centuries: ['century', 'centuries'],
+        millennia: ['millenium', 'millenia'],
       }
     }
   }
@@ -265,8 +265,8 @@ class RelativeTime
       months = (@seconds / @@average_seconds[:month])
       seconds = @seconds - months.months.unaverage.get(:seconds)
       RelativeTime.new(
-        :seconds => seconds,
-        :months => months + @months
+        seconds: seconds,
+        months: months + @months
       )
     else
       self
@@ -292,7 +292,7 @@ class RelativeTime
   def unaverage
     seconds = @@average_seconds[:month] * @months
     seconds += @seconds
-    RelativeTime.new(:seconds => seconds)
+    RelativeTime.new(seconds: seconds)
   end
 
   # Destructively average month-based units to second-based units.
@@ -310,8 +310,8 @@ class RelativeTime
   def +(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
     RelativeTime.new({
-      :seconds => @seconds + time.get(:seconds),
-      :months => @months + time.get(:months)
+      seconds: @seconds + time.get(:seconds),
+      months: @months + time.get(:months)
     })
   end
 
@@ -321,8 +321,8 @@ class RelativeTime
   def -(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
     RelativeTime.new({
-      :seconds => @seconds - time.get(:seconds),
-      :months => @months - time.get(:months)
+      seconds: @seconds - time.get(:seconds),
+      months: @months - time.get(:months)
     })
   end
 
@@ -333,7 +333,7 @@ class RelativeTime
   #     # => 5:30:00 PM
   def to_wall
     raise WallClock::TimeOutOfBoundsError if @months > 0
-    WallClock.new(:second => @seconds)
+    WallClock.new(second: @seconds)
   end
 
   # Convert {RelativeTime} to a human-readable format.
