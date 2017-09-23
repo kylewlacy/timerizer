@@ -253,6 +253,18 @@ class RelativeTime
     "
   end
 
+  def to_unit(unit)
+    if @@in_seconds.has_key?(unit)
+      seconds = self.unaverage.get(:seconds)
+      seconds / @@in_seconds[unit]
+    elsif @@in_months.has_key?(unit)
+      months = self.average.get(:months)
+      months / @@in_months[unit]
+    else
+      raise ArgumentError, "Unknown unit: #{unit.inspect}"
+    end
+  end
+
   # Average second-based units to month-based units.
   # @return [RelativeTime] The averaged RelativeTime
   # @example

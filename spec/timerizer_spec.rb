@@ -121,6 +121,51 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#to_unit" do
+    it "converts any `RelativeTime` to seconds" do
+      expect(1.second.to_unit(:second)).to eq(1)
+      expect((10.minutes 3.seconds).to_unit(:second)).to eq((10 * 60) + 3)
+      expect((1.hour 4.minutes).to_unit(:second)).to eq((60 * 60) + (4 * 60))
+      expect(3.days.to_unit(:second)).to eq(3 * 24 * 60 * 60)
+      expect(2.weeks.to_unit(:second)).to eq(2 * 7 * 24 * 60 * 60)
+
+      expect(1.month.to_unit(:second)).to eq(2_629_746)
+      expect(1.year.to_unit(:second)).to eq(2_629_746 * 12)
+      expect((1.year 1.second).to_unit(:second)).to eq((2_629_746 * 12) + 1)
+    end
+
+    it "converts any `RelativeTime` to any second-based unit" do
+      expect(1.minute.to_unit(:minute)).to eq(1)
+      expect((10.hours 3.minutes).to_unit(:minute)).to eq((10 * 60) + 3)
+      expect(2.days.to_unit(:hour)).to eq(2 * 24)
+      expect(3.days.to_unit(:day)).to eq(3)
+      expect(2.weeks.to_unit(:week)).to eq(2)
+
+      expect(1.month.to_unit(:day)).to eq(30)
+      expect(1.year.to_unit(:day)).to eq(365)
+    end
+
+    it "converts any `RelativeTime` to months" do
+      expect(1.month.to_unit(:month)).to eq(1)
+      expect(366.days.to_unit(:month)).to eq(12)
+      expect(10.years.to_unit(:month)).to eq(120)
+      expect((366.days 1.month).to_unit(:month)).to eq(13)
+    end
+
+    it "converts any `RelativeTime` to any month-based unit" do
+      expect(1.year.to_unit(:year)).to eq(1)
+      expect(732.days.to_unit(:year)).to eq(2)
+      expect(500.years.to_unit(:century)).to eq(5)
+      expect((3_660.days 12.month).to_unit(:year)).to eq(11)
+    end
+
+    it "truncates any partial units that cannot be represented exactly" do
+      expect(1.second.to_unit(:minute)).to eq(0)
+      expect((3.days 2.seconds).to_unit(:minute)).to eq(3 * 24 * 60)
+      expect((367.days).to_unit(:year)).to eq(1)
+    end
+  end
+
   it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
