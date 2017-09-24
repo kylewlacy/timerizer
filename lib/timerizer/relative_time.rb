@@ -1,16 +1,29 @@
 # Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
 class RelativeTime
   UNITS = {
-    second: {seconds: 1},
-    minute: {seconds: 60},
-    hour: {seconds: 60 * 60},
-    day: {seconds: 24 * 60 * 60},
-    week: {seconds: 7 * 24 * 60 * 60},
-    month: {months: 1},
-    year: {months: 12},
-    decade: {months: 12 * 10},
-    century: {months: 12 * 100},
-    millennium: {months: 12 * 1000}
+    seconds: {seconds: 1},
+    minutes: {seconds: 60},
+    hours: {seconds: 60 * 60},
+    days: {seconds: 24 * 60 * 60},
+    weeks: {seconds: 7 * 24 * 60 * 60},
+    months: {months: 1},
+    years: {months: 12},
+    decades: {months: 12 * 10},
+    centuries: {months: 12 * 100},
+    millennia: {months: 12 * 1000}
+  }
+
+  UNIT_PLURALS = {
+    second: :seconds,
+    minute: :minutes,
+    hour: :hours,
+    day: :days,
+    week: :weeks,
+    month: :months,
+    year: :years,
+    decade: :decades,
+    century: :centuries,
+    millennium: :millennia
   }
 
   @@units = {
@@ -419,6 +432,8 @@ class RelativeTime
   def self.resolve_unit(unit)
     if UNITS.has_key?(unit)
       UNITS.fetch(unit)
+    elsif UNIT_PLURALS.has_key?(unit)
+      UNITS.fetch(UNIT_PLURALS.fetch(unit))
     else
       raise ArgumentError, "Unknown unit: #{unit.inspect}"
     end
