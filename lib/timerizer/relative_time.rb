@@ -293,6 +293,20 @@ class RelativeTime
     end
   end
 
+  def to_units(*units)
+    sorted_units = self.class.sort_units(units).reverse
+
+    _, parts = sorted_units.reduce([self, {}]) do |(remainder, parts), unit|
+      # TODO: Refactor to avoid calling `#send`
+      part = remainder.to_unit(unit)
+      new_remainder = remainder - part.send(unit)
+
+      [new_remainder, parts.merge(unit => part)]
+    end
+
+    parts
+  end
+
   # Average second-based units to month-based units.
   # @return [RelativeTime] The averaged RelativeTime
   # @example
@@ -429,13 +443,25 @@ class RelativeTime
 
   private
 
-  def self.resolve_unit(unit)
+  def self.normalize_unit(unit)
     if UNITS.has_key?(unit)
-      UNITS.fetch(unit)
+      unit
     elsif UNIT_PLURALS.has_key?(unit)
-      UNITS.fetch(UNIT_PLURALS.fetch(unit))
+      UNIT_PLURALS.fetch(unit)
     else
       raise ArgumentError, "Unknown unit: #{unit.inspect}"
+    end
+  end
+
+  def self.resolve_unit(unit)
+    normalized_unit = self.normalize_unit(unit)
+    UNITS.fetch(normalized_unit)
+  end
+
+  def self.sort_units(units)
+    units.sort_by do |unit|
+      index = UNITS.find_index {|u, _| u == self.normalize_unit(unit)}
+      index or raise ArgumentError, "Unknown unit: #{unit.inspect}"
     end
   end
 end

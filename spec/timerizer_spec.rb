@@ -166,6 +166,29 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#to_units" do
+    it "breaks down a `RelativeTime` into multiple pieces" do
+      expect(365.days.to_units(:hours)).to eq(hours: 365 * 24)
+      expect(180.days.to_units(:weeks, :days)).to eq(weeks: 25, days: 5)
+
+      expect(
+        90.minutes.to_units(:days, :hours, :minutes, :seconds)
+      ).to eq(days: 0, hours: 1, minutes: 30, seconds: 0)
+
+      expect(
+        (2.years 14.months).to_units(:years, :hours)
+      ).to eq(years: 3, hours: 1_460)
+    end
+
+    it "returns a hash that has the same keys as the passed-in unit names" do
+      # Note that we mix singular and plural forms, and that the returned
+      # hash matches the pluralization for each given unit.
+      expect(
+        0.seconds.to_units(:second, :minutes, :hour, :days)
+      ).to eq(second: 0, minutes: 0, hour: 0, days: 0)
+    end
+  end
+
   it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
