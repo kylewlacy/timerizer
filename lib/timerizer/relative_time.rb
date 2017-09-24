@@ -1,5 +1,18 @@
 # Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
 class RelativeTime
+  UNITS = {
+    second: {seconds: 1},
+    minute: {seconds: 60},
+    hour: {seconds: 60 * 60},
+    day: {seconds: 24 * 60 * 60},
+    week: {seconds: 7 * 24 * 60 * 60},
+    month: {months: 1},
+    year: {months: 12},
+    decade: {months: 12 * 10},
+    century: {months: 12 * 100},
+    millennium: {months: 12 * 1000}
+  }
+
   @@units = {
     second: :seconds,
     minute: :minutes,
@@ -254,14 +267,16 @@ class RelativeTime
   end
 
   def to_unit(unit)
-    if @@in_seconds.has_key?(unit)
+    unit_details = self.class.resolve_unit(unit)
+
+    if unit_details.has_key?(:seconds)
       seconds = self.unaverage.get(:seconds)
-      seconds / @@in_seconds[unit]
-    elsif @@in_months.has_key?(unit)
+      seconds / unit_details.fetch(:seconds)
+    elsif unit_details.has_key?(:months)
       months = self.average.get(:months)
-      months / @@in_months[unit]
+      months / unit_details.fetch(:months)
     else
-      raise ArgumentError, "Unknown unit: #{unit.inspect}"
+      raise "Unit should have key :seconds or :months"
     end
   end
 
@@ -397,5 +412,15 @@ class RelativeTime
     times.map do |time|
       time.join(syntax[:separator] || ' ')
     end.join(syntax[:delimiter] || ', ')
+  end
+
+  private
+
+  def self.resolve_unit(unit)
+    if UNITS.has_key?(unit)
+      UNITS.fetch(unit)
+    else
+      raise ArgumentError, "Unknown unit: #{unit.inspect}"
+    end
   end
 end
