@@ -103,7 +103,7 @@ class RelativeTime
         months: 'mn',
         years: 'yr',
         centuries: 'ct',
-        millenia: 'ml'
+        millennia: 'ml'
       },
       separator: '',
       delimiter: ' ',
@@ -119,7 +119,7 @@ class RelativeTime
         months: ['month', 'months'],
         years: ['year', 'years'],
         centuries: ['century', 'centuries'],
-        millennia: ['millenium', 'millenia'],
+        millennia: ['millenium', 'millennia'],
       }
     }
   }
