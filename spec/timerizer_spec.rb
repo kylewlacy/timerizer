@@ -38,6 +38,24 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#new" do
+    it "can construct a new `RelativeTime` from fundamental units" do
+      relative_time = RelativeTime.new(seconds: 10, months: 20)
+      expect(relative_time.get(:seconds)).to eq(10)
+      expect(relative_time.get(:months)).to eq(20)
+    end
+
+    it "can construct a new `RelativeTime` from a unit and quantity" do
+      relative_time = RelativeTime.new(20, :minute)
+      expect(relative_time.get(:seconds)).to eq(20 * 60)
+      expect(relative_time.get(:months)).to eq(0)
+
+      relative_time = RelativeTime.new(20, :year)
+      expect(relative_time.get(:seconds)).to eq(0)
+      expect(relative_time.get(:months)).to eq(20 * 12)
+    end
+  end
+
   describe "#to_wall" do
     it "calculates an equivalent WallClock time" do
       expect((5.hours 30.minutes).to_wall).to eq(WallClock.new(5, 30))
