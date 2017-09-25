@@ -26,9 +26,19 @@ class RelativeTime
     millennium: :millennia
   }
 
-  NORMALIZED = {
-    months: { seconds: 30 * 24 * 60 * 60 },
-    years: { seconds: 365 * 24 * 60 * 60 }
+  NORMALIZATION_METHODS = {
+    standard: {
+      months: { seconds: 30 * 24 * 60 * 60 },
+      years: { seconds: 365 * 24 * 60 * 60 }
+    },
+    minimum: {
+      months: { seconds: 28 * 24 * 60 * 60 },
+      years: { seconds: 365 * 24 * 60 * 60 }
+    },
+    maximum: {
+      months: { seconds: 31 * 24 * 60 * 60 },
+      years: { seconds: 366 * 24 * 60 * 60 }
+    }
   }
 
   @@units = {
@@ -312,12 +322,14 @@ class RelativeTime
     parts
   end
 
-  def normalize
+  def normalize(method: :standard)
+    normalized_units = NORMALIZATION_METHODS.fetch(method).reverse_each
+
     normalized = 0.seconds
     remainder = self
 
     initial = [0.seconds, self]
-    result = NORMALIZED.reverse_each.reduce(initial) do |result, (unit, normal)|
+    result = normalized_units.reduce(initial) do |result, (unit, normal)|
       normalized, remainder = result
 
       seconds_per_unit = normal.fetch(:seconds)
@@ -333,12 +345,14 @@ class RelativeTime
     normalized + remainder
   end
 
-  def denormalize
+  def denormalize(method: :standard)
+    normalized_units = NORMALIZATION_METHODS.fetch(method).reverse_each
+
     denormalized = 0.seconds
     remainder = self
 
     initial = [0.seconds, self]
-    result = NORMALIZED.reverse_each.reduce(initial) do |result, (unit, normal)|
+    result = normalized_units.reduce(initial) do |result, (unit, normal)|
       denormalized, remainder = result
 
       seconds_per_unit = normal.fetch(:seconds)

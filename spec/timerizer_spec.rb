@@ -205,6 +205,24 @@ RSpec.describe RelativeTime do
         (25.months 366.days).normalize.get(:seconds)
       ).to eq((3 * 365 * 24 * 60 * 60) + (30 * 24 * 60 * 60) + (24 * 60 * 60))
     end
+
+    it "can normalize using different normalization methods" do
+      expect(
+        1.month.normalize(method: :minimum).to_unit(:seconds)
+      ).to eq(28 * 24 * 60 * 60)
+
+      expect(
+        1.month.normalize(method: :maximum).to_unit(:seconds)
+      ).to eq(31 * 24 * 60 * 60)
+
+      expect(
+        1.year.normalize(method: :minimum).to_unit(:seconds)
+      ).to eq(365 * 24 * 60 * 60)
+
+      expect(
+        1.year.normalize(method: :maximum).to_unit(:seconds)
+      ).to eq(366 * 24 * 60 * 60)
+    end
   end
 
   describe "#denormalize" do
@@ -218,6 +236,24 @@ RSpec.describe RelativeTime do
       expect(
         (2.years 366.days).denormalize.to_units(:years, :days)
       ).to eq(years: 3, days: 1)
+    end
+
+    it "can denormalize using different normalization methods" do
+      expect(
+        32.days.denormalize(method: :minimum).to_units(:months, :days)
+      ).to eq(months: 1, days: 4)
+
+      expect(
+        32.days.denormalize(method: :maximum).to_units(:months, :days)
+      ).to eq(months: 1, days: 1)
+
+      expect(
+        367.days.denormalize(method: :minimum).to_units(:years, :days)
+      ).to eq(years: 1, days: 2)
+
+      expect(
+        367.days.denormalize(method: :maximum).to_units(:years, :days)
+      ).to eq(years: 1, days: 1)
     end
   end
 
