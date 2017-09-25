@@ -333,6 +333,31 @@ class RelativeTime
     normalized + remainder
   end
 
+  def denormalize
+    denormalized = 0.seconds
+    remainder = self
+
+    initial = [0.seconds, self]
+    result = NORMALIZED.reverse_each.reduce(initial) do |result, (unit, normal)|
+      denormalized, remainder = result
+
+      seconds_per_unit = normal.fetch(:seconds)
+      remainder_seconds = remainder.get(:seconds)
+
+      num_unit = remainder_seconds / seconds_per_unit
+      num_seconds_denormalized = num_unit * seconds_per_unit
+
+      # TODO: Refactor to avoid calling `#send`
+      denormalized += num_unit.send(unit)
+      remainder -= num_seconds_denormalized.seconds
+
+      [denormalized, remainder]
+    end
+
+    denormalized, remainder = result
+    denormalized + remainder
+  end
+
   # Average second-based units to month-based units.
   # @return [RelativeTime] The averaged RelativeTime
   # @example

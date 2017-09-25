@@ -207,6 +207,20 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#denormalize" do
+    it "can approximate second-based units as month-based units" do
+      expect(30.days.denormalize.to_unit(:months)).to eq(1)
+
+      expect(
+        (1.month 100.days).denormalize.to_units(:months, :days)
+      ).to eq(months: 4, days: 10)
+
+      expect(
+        (2.years 366.days).denormalize.to_units(:years, :days)
+      ).to eq(years: 3, days: 1)
+    end
+  end
+
   it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
