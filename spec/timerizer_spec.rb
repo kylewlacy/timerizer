@@ -88,6 +88,20 @@ RSpec.describe RelativeTime do
         (1.year 3.months 4.days).to_s(:short)
       ).to eq("1yr 3mn")
     end
+
+    it "converts units using a user-defined syntax" do
+      expect(
+        (1.hour 3.minutes 4.seconds).to_s(
+          units: {
+            seconds: "second(s)",
+            minutes: "minute(s)",
+            hours: "hour(s)"
+          },
+          separator: ' ',
+          delimiter: ' / '
+        )
+      ).to eq("1 hour(s) / 3 minute(s) / 4 second(s)")
+    end
   end
 
   describe "#average" do
