@@ -456,53 +456,49 @@ class RelativeTime
   end
 
   # Convert {RelativeTime} to a human-readable format.
-  # @overload to_s(syntax)
-  #   @param [Symbol] syntax The syntax from @@syntaxes to use
-  # @overload to_s(hash)
-  #   @param [Hash] hash The custom hash to use
-  #   @option hash [Hash] :units The unit names to use. See @@syntaxes for examples
-  #   @option hash [Integer] :count The maximum number of units to output. `1` would output only the unit of greatest example (such as the hour value in `1.hour 3.minutes 2.seconds`).
-  #   @option hash [String] :separator The separator to use in between a unit and its value
-  #   @option hash [String] :delimiter The delimiter to use in between different unit-value pairs
-  # @example
-  #   (14.months 49.hours).to_s
-  #     => 2 years, 2 months, 3 days, 1 hour
-  #   (1.day 3.hours 4.minutes).to_s(:short)
-  #     => 1d 3hr
-  # @raise KeyError Symbol argument isn't in @@syntaxes
-  # @raise ArgumentError Argument isn't a hash (if not a symbol)
-  # @see @@syntaxes
-  def to_s(syntax = :long)
-    if syntax.is_a? Symbol
-      syntax = @@syntaxes.fetch(syntax)
-    end
+  def to_s(format = :long, options = nil)
+    syntax =
+      case format
+      when Symbol
+        @@syntaxes.fetch(format)
+      when Hash
+        format
+      else
+        raise ArgumentError, "Expected #{format.inspect} to be a Symbol or Hash"
+      end
 
-    raise ArgumentError unless syntax.is_a? Hash
-    times = []
+    syntax = syntax.merge(options || {})
 
     if syntax[:count].nil? || syntax[:count] == :all
-      syntax[:count] = @@units.count
+      count = @@units.count
+    else
+      count = syntax[:count]
     end
-    units = syntax.fetch(:units)
 
-    count = 0
-    units = Hash[units.to_a.reverse]
-    units.each do |unit, (singular, plural)|
-      if count < syntax.fetch(:count)
-        time = self.respond_to?(unit) ? self.send(unit) : 0
+    syntax_units = syntax.fetch(:units)
+    units = self.to_units(*syntax_units.keys).select {|unit, n| n > 0}
 
-        if time > 1 && !plural.nil?
-          times << [time, plural]
-          count += 1
-        elsif time > 0
-          times << [time, singular]
-          count += 1
+    separator = syntax[:separator] || ' '
+    delimiter = syntax[:delimiter] || ', '
+    units.take(count).map do |unit, n|
+      unit_label = syntax_units.fetch(unit)
+
+      singular, plural =
+        case unit_label
+        when Array
+          unit_label
+        else
+          [unit_label, unit_label]
         end
-      end
-    end
 
-    times.map do |time|
-      time.join(syntax[:separator] || ' ')
+        unit_name =
+          if n == 1
+            singular
+          else
+            plural || singular
+          end
+
+        [n, unit_name].join(separator)
     end.join(syntax[:delimiter] || ', ')
   end
 
