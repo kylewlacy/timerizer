@@ -189,6 +189,24 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#normalize" do
+    it "can approxmiate month-based units as second-based units" do
+      expect(1.month.normalize.to_unit(:seconds)).to eq(30 * 24 * 60 * 60)
+
+      expect(
+        11.months.normalize.to_unit(:seconds)
+      ).to eq(11 * 30 * 24 * 60 * 60)
+
+      expect(
+        14.months.normalize.to_unit(:seconds)
+      ).to eq((365 * 24 * 60 * 60) + (2 * 30 * 24 * 60 * 60))
+
+      expect(
+        (25.months 366.days).normalize.get(:seconds)
+      ).to eq((3 * 365 * 24 * 60 * 60) + (30 * 24 * 60 * 60) + (24 * 60 * 60))
+    end
+  end
+
   it "can be compared against other `RelativeTime`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)

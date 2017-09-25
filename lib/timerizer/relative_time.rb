@@ -26,6 +26,11 @@ class RelativeTime
     millennium: :millennia
   }
 
+  NORMALIZED = {
+    months: { seconds: 30 * 24 * 60 * 60 },
+    years: { seconds: 365 * 24 * 60 * 60 }
+  }
+
   @@units = {
     second: :seconds,
     minute: :minutes,
@@ -307,6 +312,27 @@ class RelativeTime
     parts
   end
 
+  def normalize
+    normalized = 0.seconds
+    remainder = self
+
+    initial = [0.seconds, self]
+    result = NORMALIZED.reverse_each.reduce(initial) do |result, (unit, normal)|
+      normalized, remainder = result
+
+      seconds_per_unit = normal.fetch(:seconds)
+      unit_part = remainder.send(:to_unit_part, unit)
+
+      # TODO: Refactor to avoid calling `#send`
+      new_normalized = normalized + (unit_part * seconds_per_unit).seconds
+      new_remainder = remainder - unit_part.send(unit)
+      [new_normalized, new_remainder]
+    end
+
+    normalized, remainder = result
+    normalized + remainder
+  end
+
   # Average second-based units to month-based units.
   # @return [RelativeTime] The averaged RelativeTime
   # @example
@@ -442,6 +468,37 @@ class RelativeTime
   end
 
   private
+
+  # This method is like `#to_unit`, except it does not perform normalization
+  # first. Put another way, this method is essentially the same as `#to_unit`
+  # except it does not normalize the value first. It is similar to `#get` except
+  # that it can be used with non-primitive units as well.
+  #
+  # @example
+  # (1.year 1.month 365.days).to_unit_part(:month)
+  # # => 13
+  # # Returns 13 because that is the number of months contained exactly within
+  # # the sepcified `RelativeTime`. Since "days" cannot be translated to an
+  # # exact number of months, they *are not* factored into the result at all.
+  #
+  # (25.months).to_unit_part(:year)
+  # # => 2
+  # # Returns 2 becasue that is the number of months contained exactly within
+  # # the specified `RelativeTime`. Since "years" is essentially an alias
+  # # for "12 months", months *are* factored into the result.
+  def to_unit_part(unit)
+    unit_details = self.class.resolve_unit(unit)
+
+    if unit_details.has_key?(:seconds)
+      seconds = self.get(:seconds)
+      seconds / unit_details.fetch(:seconds)
+    elsif unit_details.has_key?(:months)
+      months = self.get(:months)
+      months / unit_details.fetch(:months)
+    else
+      raise "Unit should have key :seconds or :months"
+    end
+  end
 
   def self.normalize_unit(unit)
     if UNITS.has_key?(unit)
