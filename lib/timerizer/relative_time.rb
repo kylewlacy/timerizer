@@ -78,7 +78,7 @@ class RelativeTime
 
   # Default syntax formats that can be used with #to_s
   # @see #to_s
-  @@syntaxes = {
+  SYNTAXES = {
     micro: {
       units: {
         seconds: 's',
@@ -409,7 +409,7 @@ class RelativeTime
     syntax =
       case format
       when Symbol
-        @@syntaxes.fetch(format)
+        SYNTAXES.fetch(format)
       when Hash
         format
       else
