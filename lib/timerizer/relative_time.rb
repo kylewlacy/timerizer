@@ -140,26 +140,14 @@ class RelativeTime
   end
 
   # Initialize a new instance of RelativeTime.
-  # @overload new(hash)
-  #   @param [Hash] units The base units to initialize with
-  #   @option units [Integer] :seconds The number of seconds
-  #   @option units [Integer] :months The number of months
-  # @overload new(count, unit)
-  #   @param [Integer] count The number of units to initialize with
-  #   @param [Symbol] unit The unit to initialize. See {RelativeTime#units}
-  def initialize(count = 0, unit = :second)
-    if count.is_a? Hash
-      units = count
-      units.default = 0
-      @seconds, @months = units.values_at(:seconds, :months)
-    else
-      @seconds = @months = 0
+  def initialize(units = {})
+    @seconds = 0
+    @months = 0
 
-      if @@in_seconds.has_key?(unit)
-        @seconds = count * @@in_seconds.fetch(unit)
-      elsif @@in_months.has_key?(unit)
-        @months = count * @@in_months.fetch(unit)
-      end
+    units.each do |unit, n|
+      unit_info = self.class.resolve_unit(unit)
+      @seconds += n * unit_info.fetch(:seconds, 0)
+      @months += n * unit_info.fetch(:months, 0)
     end
   end
 

@@ -96,7 +96,7 @@ class Time
   def self.between(time1, time2)
     time_between = (time2.to_time - time1.to_time).abs
 
-    RelativeTime.new(time_between.round)
+    RelativeTime.new(seconds: time_between.round)
   end
 
   # Convert {Time} to {Date}.
@@ -179,7 +179,7 @@ class Integer
   RelativeTime.units.each do |unit, plural|
     class_eval "
       def #{unit}(added_time = RelativeTime.new)
-        time = RelativeTime.new(self, :#{unit})
+        time = RelativeTime.new(:#{unit} => self)
         time + added_time unless added_time.nil?
       end
     "

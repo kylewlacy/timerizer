@@ -39,20 +39,26 @@ RSpec.describe RelativeTime do
   end
 
   describe "#new" do
-    it "can construct a new `RelativeTime` from fundamental units" do
+    it "can construct a new `RelativeTime` from a hash of units" do
+      relative_time = RelativeTime.new
+      expect(relative_time.get(:seconds)).to eq(0)
+      expect(relative_time.get(:months)).to eq(0)
+
+      relative_time = RelativeTime.new(seconds: 10)
+      expect(relative_time.get(:seconds)).to eq(10)
+      expect(relative_time.get(:months)).to eq(0)
+
+      relative_time = RelativeTime.new(second: 10, minute: 20, hours: 30)
+      expect(relative_time.get(:seconds)).to eq(10 + (20 * 60) + (30 * 60 * 60))
+      expect(relative_time.get(:months)).to eq(0)
+
       relative_time = RelativeTime.new(seconds: 10, months: 20)
       expect(relative_time.get(:seconds)).to eq(10)
       expect(relative_time.get(:months)).to eq(20)
-    end
 
-    it "can construct a new `RelativeTime` from a unit and quantity" do
-      relative_time = RelativeTime.new(20, :minute)
-      expect(relative_time.get(:seconds)).to eq(20 * 60)
-      expect(relative_time.get(:months)).to eq(0)
-
-      relative_time = RelativeTime.new(20, :year)
-      expect(relative_time.get(:seconds)).to eq(0)
-      expect(relative_time.get(:months)).to eq(20 * 12)
+      relative_time = RelativeTime.new(hours: 1, days: 2, year: 10)
+      expect(relative_time.get(:seconds)).to eq((60 * 60) + (2 * 24 * 60 * 60))
+      expect(relative_time.get(:months)).to eq(10 * 12)
     end
   end
 
