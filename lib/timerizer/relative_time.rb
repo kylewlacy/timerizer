@@ -372,57 +372,6 @@ class RelativeTime
     denormalized + remainder
   end
 
-  # Average second-based units to month-based units.
-  # @return [RelativeTime] The averaged RelativeTime
-  # @example
-  #   5.weeks.average
-  #     => 1 month, 4 days, 13 hours, 30 minutes, 54 seconds
-  # @see #average!
-  # @see #unaverage
-  def average
-    if @seconds > 0
-      months = (@seconds / @@average_seconds[:month])
-      seconds = @seconds - months.months.unaverage.get(:seconds)
-      RelativeTime.new(
-        seconds: seconds,
-        months: months + @months
-      )
-    else
-      self
-    end
-  end
-
-  # Destructively average second-based units to month-based units.
-  # @see #average
-  def average!
-    averaged = self.average
-    @seconds = averaged.get(:seconds)
-    @months = averaged.get(:months)
-    self
-  end
-
-  # Average month-based units to second-based units.
-  # @return [RelativeTime] the unaveraged RelativeTime.
-  # @example
-  #   1.month.unaverage
-  #     => 4 weeks, 2 days, 10 hours, 29 minutes, 6 seconds
-  # @see #average
-  # @see #unaverage!
-  def unaverage
-    seconds = @@average_seconds[:month] * @months
-    seconds += @seconds
-    RelativeTime.new(seconds: seconds)
-  end
-
-  # Destructively average month-based units to second-based units.
-  # @see #unaverage
-  def unaverage!
-    unaveraged = self.average
-    @seconds = unaverage.get(:seconds)
-    @months = unaverage.get(:months)
-    self
-  end
-
   # Add two {RelativeTime}s together.
   # @raise ArgumentError Argument isn't a {RelativeTime}
   # @see #-
