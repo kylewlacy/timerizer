@@ -300,9 +300,8 @@ class RelativeTime
     sorted_units = self.class.sort_units(units).reverse
 
     _, parts = sorted_units.reduce([self, {}]) do |(remainder, parts), unit|
-      # TODO: Refactor to avoid calling `#send`
       part = remainder.to_unit(unit)
-      new_remainder = remainder - part.send(unit)
+      new_remainder = remainder - RelativeTime.new(unit => part)
 
       [new_remainder, parts.merge(unit => part)]
     end
@@ -323,9 +322,8 @@ class RelativeTime
       seconds_per_unit = normal.fetch(:seconds)
       unit_part = remainder.send(:to_unit_part, unit)
 
-      # TODO: Refactor to avoid calling `#send`
       new_normalized = normalized + (unit_part * seconds_per_unit).seconds
-      new_remainder = remainder - unit_part.send(unit)
+      new_remainder = remainder - RelativeTime.new(unit => unit_part)
       [new_normalized, new_remainder]
     end
 
@@ -350,7 +348,7 @@ class RelativeTime
       num_seconds_denormalized = num_unit * seconds_per_unit
 
       # TODO: Refactor to avoid calling `#send`
-      denormalized += num_unit.send(unit)
+      denormalized += RelativeTime.new(unit => num_unit)
       remainder -= num_seconds_denormalized.seconds
 
       [denormalized, remainder]
@@ -365,10 +363,10 @@ class RelativeTime
   # @see #-
   def +(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
-    RelativeTime.new({
+    RelativeTime.new(
       seconds: @seconds + time.get(:seconds),
       months: @months + time.get(:months)
-    })
+    )
   end
 
   # Find the difference between two {RelativeTime}s.
@@ -376,10 +374,10 @@ class RelativeTime
   # @see #+
   def -(time)
     raise ArgumentError unless time.is_a?(RelativeTime)
-    RelativeTime.new({
+    RelativeTime.new(
       seconds: @seconds - time.get(:seconds),
       months: @months - time.get(:months)
-    })
+    )
   end
 
   # Converts {RelativeTime} to {WallClock}
