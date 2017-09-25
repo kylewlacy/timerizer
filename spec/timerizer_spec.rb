@@ -143,9 +143,9 @@ RSpec.describe RelativeTime do
       expect(3.days.to_unit(:seconds)).to eq(3 * 24 * 60 * 60)
       expect(2.weeks.to_unit(:seconds)).to eq(2 * 7 * 24 * 60 * 60)
 
-      expect(1.month.to_unit(:second)).to eq(2_629_746)
-      expect(1.year.to_unit(:second)).to eq(2_629_746 * 12)
-      expect((1.year 1.second).to_unit(:second)).to eq((2_629_746 * 12) + 1)
+      expect(1.month.to_unit(:second)).to eq(30 * 24 * 60 * 60)
+      expect(1.year.to_unit(:second)).to eq(365 * 24 * 60 * 60)
+      expect((1.year 1.second).to_unit(:second)).to eq((365 * 24 * 60 * 60) + 1)
     end
 
     it "converts any `RelativeTime` to any second-based unit" do
@@ -191,7 +191,7 @@ RSpec.describe RelativeTime do
 
       expect(
         (2.years 14.months).to_units(:years, :hours)
-      ).to eq(years: 3, hours: 1_460)
+      ).to eq(years: 3, hours: 1_440)
     end
 
     it "returns a hash that has the same keys as the passed-in unit names" do

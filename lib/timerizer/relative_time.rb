@@ -298,10 +298,10 @@ class RelativeTime
     unit_details = self.class.resolve_unit(unit)
 
     if unit_details.has_key?(:seconds)
-      seconds = self.unaverage.get(:seconds)
+      seconds = self.normalize.get(:seconds)
       seconds / unit_details.fetch(:seconds)
     elsif unit_details.has_key?(:months)
-      months = self.average.get(:months)
+      months = self.denormalize.get(:months)
       months / unit_details.fetch(:months)
     else
       raise "Unit should have key :seconds or :months"
