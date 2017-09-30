@@ -13,7 +13,7 @@ class RelativeTime
     millennia: {months: 12 * 1000}
   }
 
-  UNIT_PLURALS = {
+  UNIT_ALIASES = {
     second: :seconds,
     minute: :minutes,
     hour: :hours,
@@ -474,8 +474,8 @@ class RelativeTime
   def self.normalize_unit(unit)
     if UNITS.has_key?(unit)
       unit
-    elsif UNIT_PLURALS.has_key?(unit)
-      UNIT_PLURALS.fetch(unit)
+    elsif UNIT_ALIASES.has_key?(unit)
+      UNIT_ALIASES.fetch(unit)
     else
       raise ArgumentError, "Unknown unit: #{unit.inspect}"
     end
