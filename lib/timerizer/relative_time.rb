@@ -488,8 +488,8 @@ class RelativeTime
 
   def self.sort_units(units)
     units.sort_by do |unit|
-      index = UNITS.find_index {|u, _| u == self.normalize_unit(unit)}
-      index or raise ArgumentError, "Unknown unit: #{unit.inspect}"
+      unit_info = self.resolve_unit(unit)
+      [unit_info.fetch(:months, 0), unit_info.fetch(:seconds, 0)]
     end
   end
 
