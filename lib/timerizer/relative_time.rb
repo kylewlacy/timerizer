@@ -14,16 +14,16 @@ class RelativeTime
   }
 
   UNIT_ALIASES = {
-    second: :seconds,
-    minute: :minutes,
-    hour: :hours,
-    day: :days,
-    week: :weeks,
-    month: :months,
-    year: :years,
-    decade: :decades,
-    century: :centuries,
-    millennium: :millennia
+    second: UNITS[:seconds],
+    minute: UNITS[:minutes],
+    hour: UNITS[:hours],
+    day: UNITS[:days],
+    week: UNITS[:weeks],
+    month: UNITS[:months],
+    year: UNITS[:years],
+    decade: UNITS[:decades],
+    century: UNITS[:centuries],
+    millennium: UNITS[:millennia]
   }
 
   NORMALIZATION_METHODS = {
@@ -471,19 +471,14 @@ class RelativeTime
     end
   end
 
-  def self.normalize_unit(unit)
+  def self.resolve_unit(unit)
     if UNITS.has_key?(unit)
-      unit
+      UNITS.fetch(unit)
     elsif UNIT_ALIASES.has_key?(unit)
       UNIT_ALIASES.fetch(unit)
     else
       raise ArgumentError, "Unknown unit: #{unit.inspect}"
     end
-  end
-
-  def self.resolve_unit(unit)
-    normalized_unit = self.normalize_unit(unit)
-    UNITS.fetch(normalized_unit)
   end
 
   def self.sort_units(units)
