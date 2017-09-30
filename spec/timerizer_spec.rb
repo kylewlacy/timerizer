@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Duration do
+RSpec.describe Timerizer::Duration do
   context "given an existing time" do
     before :all do
       @time = Time.new(2000, 1, 1, 3, 45, 00)
@@ -89,23 +89,23 @@ RSpec.describe Duration do
 
   describe "#new" do
     it "can construct a new `Duration` from a hash of units" do
-      duration = Duration.new
+      duration = Timerizer::Duration.new
       expect(duration.get(:seconds)).to eq(0)
       expect(duration.get(:months)).to eq(0)
 
-      duration = Duration.new(seconds: 10)
+      duration = Timerizer::Duration.new(seconds: 10)
       expect(duration.get(:seconds)).to eq(10)
       expect(duration.get(:months)).to eq(0)
 
-      duration = Duration.new(second: 10, minute: 20, hours: 30)
+      duration = Timerizer::Duration.new(second: 10, minute: 20, hours: 30)
       expect(duration.get(:seconds)).to eq(10 + (20 * 60) + (30 * 60 * 60))
       expect(duration.get(:months)).to eq(0)
 
-      duration = Duration.new(seconds: 10, months: 20)
+      duration = Timerizer::Duration.new(seconds: 10, months: 20)
       expect(duration.get(:seconds)).to eq(10)
       expect(duration.get(:months)).to eq(20)
 
-      duration = Duration.new(hours: 1, days: 2, year: 10)
+      duration = Timerizer::Duration.new(hours: 1, days: 2, year: 10)
       expect(duration.get(:seconds)).to eq((60 * 60) + (2 * 24 * 60 * 60))
       expect(duration.get(:months)).to eq(10 * 12)
     end
@@ -113,21 +113,23 @@ RSpec.describe Duration do
 
   describe "#to_wall" do
     it "calculates an equivalent WallClock time" do
-      expect((5.hours 30.minutes).to_wall).to eq(WallClock.new(5, 30))
+      expect(
+        (5.hours 30.minutes).to_wall
+      ).to eq(Timerizer::WallClock.new(5, 30))
     end
 
     it "raises an error for times beyond 24 hours" do
       expect do
         1.day.to_wall
-      end.to raise_error WallClock::TimeOutOfBoundsError
+      end.to raise_error Timerizer::WallClock::TimeOutOfBoundsError
 
       expect do
         217.hours.to_wall
-      end.to raise_error WallClock::TimeOutOfBoundsError
+      end.to raise_error Timerizer::WallClock::TimeOutOfBoundsError
 
       expect do
         (1.month 3.seconds).to_wall
-      end.to raise_error WallClock::TimeOutOfBoundsError
+      end.to raise_error Timerizer::WallClock::TimeOutOfBoundsError
     end
   end
 
@@ -412,42 +414,58 @@ RSpec.describe Duration do
   end
 end
 
-RSpec.describe WallClock do
+RSpec.describe Timerizer::WallClock do
   it "can be created" do
-    WallClock.new(12, 30, :pm)
-    WallClock.new(23, 30)
+    Timerizer::WallClock.new(12, 30, :pm)
+    Timerizer::WallClock.new(23, 30)
   end
 
   it "can be created from a string" do
-    expect(WallClock.from_string("9:00 PM")).to eq(WallClock.new(9, 00, :pm))
-    expect(WallClock.from_string("13:00")).to eq(WallClock.new(13, 00))
-    expect(WallClock.from_string("12:00 PM")).to eq(WallClock.new(12, 00, :pm))
-    expect(WallClock.from_string("23:34:45")).to eq(WallClock.new(23, 34, 45))
+    expect(
+      Timerizer::WallClock.from_string("9:00 PM")
+    ).to eq(Timerizer::WallClock.new(9, 00, :pm))
 
     expect(
-      WallClock.from_string("11:00:01 PM")
-    ).to eq(WallClock.new(11, 00, 01, :pm))
+      Timerizer::WallClock.from_string("13:00")
+    ).to eq(Timerizer::WallClock.new(13, 00))
+
+    expect(
+      Timerizer::WallClock.from_string("12:00 PM")
+    ).to eq(Timerizer::WallClock.new(12, 00, :pm))
+
+    expect(
+      Timerizer::WallClock.from_string("23:34:45")
+    ).to eq(Timerizer::WallClock.new(23, 34, 45))
+
+    expect(
+      Timerizer::WallClock.from_string("11:00:01 PM")
+    ).to eq(Timerizer::WallClock.new(11, 00, 01, :pm))
   end
 
   it "can apply a time on a day" do
     date = Date.new(2000, 1, 1)
-    expect(WallClock.new(9, 00, :pm).on(date)).to eq(Time.new(2000, 1, 1, 21))
+    expect(
+      Timerizer::WallClock.new(9, 00, :pm).on(date)
+    ).to eq(Time.new(2000, 1, 1, 21))
   end
 
   it "can be initialized from a hash of values" do
     date = Date.new(2000, 1, 1)
     expect(
-      WallClock.new(second: 30*60).on(date)
+      Timerizer::WallClock.new(second: 30*60).on(date)
     ).to eq(Time.new(2000, 1, 1, 0, 30))
   end
 
   it "can be converted from an integer" do
-    time = WallClock.new(21, 00)
-    expect(WallClock.new(time.to_i)).to eq(WallClock.new(9, 00, :pm))
+    time = Timerizer::WallClock.new(21, 00)
+
+    expect(
+      Timerizer::WallClock.new(time.to_i)
+    ).to eq(Timerizer::WallClock.new(9, 00, :pm))
   end
 
   it "can return its components" do
-    time = WallClock.new(5, 35, 45, :pm)
+    time = Timerizer::WallClock.new(5, 35, 45, :pm)
     expect(time.hour).to eq(17)
     expect(time.hour(:twenty_four_hour)).to eq(17)
     expect(time.hour(:twelve_hour)).to eq(5)
@@ -466,27 +484,27 @@ RSpec.describe WallClock do
 
   it "raises an error for invalid wallclock times" do
     expect do
-      WallClock.new(13, 00, :pm)
-    end.to raise_error(WallClock::TimeOutOfBoundsError)
+      Timerizer::WallClock.new(13, 00, :pm)
+    end.to raise_error(Timerizer::WallClock::TimeOutOfBoundsError)
 
     expect do
-      WallClock.new(24, 00, 00)
-    end.to raise_error(WallClock::TimeOutOfBoundsError)
+      Timerizer::WallClock.new(24, 00, 00)
+    end.to raise_error(Timerizer::WallClock::TimeOutOfBoundsError)
 
     expect do
-      WallClock.new(0, 60)
-    end.to raise_error(WallClock::TimeOutOfBoundsError)
+      Timerizer::WallClock.new(0, 60)
+    end.to raise_error(Timerizer::WallClock::TimeOutOfBoundsError)
   end
 
   it "can be converted to a `Duration`" do
     expect(
-      WallClock.new(5, 30, 27, :pm).to_duration
+      Timerizer::WallClock.new(5, 30, 27, :pm).to_duration
     ).to eq(17.hours 30.minutes 27.seconds)
   end
 
   describe "#to_s" do
     before do
-      @time = WallClock.new(5, 30, 27, :pm)
+      @time = Timerizer::WallClock.new(5, 30, 27, :pm)
     end
 
     it "can be converted to a 12-hour time string" do
@@ -512,7 +530,7 @@ RSpec.describe WallClock do
     end
 
     it "zero-pads units" do
-      time = WallClock.new(0, 00, 00)
+      time = Timerizer::WallClock.new(0, 00, 00)
       expect(time.to_s(:twelve_hour)).to eq("12:00:00 PM")
       expect(time.to_s(:twenty_four_hour)).to eq("0:00:00")
 
@@ -558,7 +576,7 @@ RSpec.describe Time do
 
   it "can be converted to a WallClock time" do
     time = Time.new(2000, 1, 1, 17, 58, 04)
-    expect(time.to_wall).to eq(WallClock.new(5, 58, 04, :pm))
+    expect(time.to_wall).to eq(Timerizer::WallClock.new(5, 58, 04, :pm))
   end
 end
 
@@ -584,7 +602,7 @@ RSpec.describe Date do
 
   it "returns the time on a given date" do
      date = Date.new(2000, 1, 1)
-     time = WallClock.new(5, 00, :pm)
+     time = Timerizer::WallClock.new(5, 00, :pm)
      expect(date.at(time)).to eq(Time.new(2000, 1, 1, 17))
   end
 end

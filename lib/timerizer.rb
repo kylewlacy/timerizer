@@ -37,7 +37,7 @@ class Time
 
   alias_method :add, :+
   def +(time)
-    if time.is_a?(Duration)
+    if time.is_a?(Timerizer::Duration)
       time.after(self)
     else
       self.add(time)
@@ -46,7 +46,7 @@ class Time
 
   alias_method :subtract, :-
   def -(time)
-    if time.is_a?(Duration)
+    if time.is_a?(Timerizer::Duration)
       time.before(self)
     else
       self.subtract(time)
@@ -96,7 +96,7 @@ class Time
   def self.between(time1, time2)
     time_between = (time2.to_time - time1.to_time).abs
 
-    Duration.new(seconds: time_between.round)
+    Timerizer::Duration.new(seconds: time_between.round)
   end
 
   # Convert {Time} to {Date}.
@@ -122,7 +122,7 @@ class Time
   #     => 2000-1-2 13:13:27 -0800
   #     # "Same time tomorrow?"
   def to_wall
-    WallClock.new(self.hour, self.min, self.sec)
+    Timerizer::WallClock.new(self.hour, self.min, self.sec)
   end
 end
 
@@ -176,10 +176,10 @@ end
 #     => 5 minutes
 # @see Duration#units
 class Integer
-  Duration.units.each do |unit, plural|
+  Timerizer::Duration.units.each do |unit, plural|
     class_eval "
-      def #{unit}(added_time = Duration.new)
-        time = Duration.new(:#{unit} => self)
+      def #{unit}(added_time = Timerizer::Duration.new)
+        time = Timerizer::Duration.new(:#{unit} => self)
         time + added_time unless added_time.nil?
       end
     "
