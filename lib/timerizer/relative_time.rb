@@ -187,30 +187,7 @@ class RelativeTime
   # @see #after
   # @see #from_now
   def before(time)
-    # TODO: This method should be refactored to negate `self`, then use `#after`
-    time = time.to_time
-
-    prev_day = time.mday
-    prev_month = time.month
-    prev_year = time.year
-
-    units = self.to_units(:years, :months, :days, :seconds)
-
-    date_in_month = self.class.build_date(
-      prev_year - units[:years],
-      prev_month - units[:months],
-      prev_day
-    )
-    date = date_in_month - units[:days]
-
-    Time.new(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.min,
-      time.sec
-    ) - units[:seconds]
+    (-self).after(time)
   end
 
   # Return the time between the RelativeTime and the current time.
