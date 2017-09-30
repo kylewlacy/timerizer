@@ -1,94 +1,8 @@
 require "spec_helper"
 
 RSpec.describe Timerizer::Duration do
-  context "given an existing time" do
-    before :all do
-      @time = Time.new(2000, 1, 1, 3, 45, 00)
-      @end_of_march = Time.new(2000, 3, 31, 3, 45, 00)
-      @end_of_january = Time.new(2000, 1, 31, 3, 45, 00)
-    end
-
-    it "calculates a new time before itself" do
-      expect(5.minutes.before(@time)).to eq(Time.new(2000, 1, 1, 3, 40, 00))
-      expect(5.months.before(@time)).to eq(Time.new(1999, 8, 1, 3, 45, 00))
-      expect(65.months.before(@time)).to eq(Time.new(1994, 8, 1, 3, 45, 00))
-
-      expect(
-        (60.minutes 12.months).before(@time)
-      ).to eq(Time.new(1999, 1, 1, 2, 45, 00))
-
-      expect(
-        1.month.before(@end_of_march)
-      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
-
-      expect(
-        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).before(@time)
-        # 2000, 1, 1, 3, 45, 00
-        # 1999, 1, 1, 3, 45, 00
-        # 1998, 12, 1, 3, 45, 00
-        # 1998, 11, 25, 3, 45, 00
-        # 1998, 11, 24, 3, 45, 00
-        # 1998, 11, 24, 2, 45, 00
-        # 1998, 11, 24, 2, 44, 00
-        # 1998, 11, 24, 2, 43, 59
-      ).to eq(Time.new(1998, 11, 23, 2, 43, 59))
-
-      expect(
-        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
-          .before(@end_of_march)
-        # 2000, 3, 31, 3, 45, 00
-        # 1999, 3, 31, 3, 45, 00
-        # 1999, 2, 28, 3, 45, 00
-        # 1999, 2, 21, 3, 45, 00
-        # 1999, 2, 20, 3, 45, 00
-        # 1999, 2, 20, 2, 45, 00
-        # 1999, 2, 20, 2, 44, 00
-        # 1999, 2, 20, 2, 43, 59
-      ).to eq(Time.new(1999, 2, 20, 2, 43, 59))
-    end
-
-    it "calculates a new time after itself" do
-      expect(5.minutes.after(@time)).to eq(Time.new(2000, 1, 1, 3, 50, 00))
-      expect(5.months.after(@time)).to eq(Time.new(2000, 6, 1, 3, 45, 00))
-      expect(65.months.after(@time)).to eq(Time.new(2005, 6, 1, 3, 45, 00))
-
-      expect(
-        (60.minutes 12.months).after(@time)
-      ).to eq(Time.new(2001, 1, 1, 4, 45, 00))
-
-      expect(
-        1.month.after(@end_of_january)
-      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
-
-      expect(
-        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).after(@time)
-        # 2000, 1, 1, 3, 45, 00
-        # 2001, 1, 1, 3, 45, 00
-        # 2001, 2, 1, 3, 45, 00
-        # 2001, 2, 8, 3, 45, 00
-        # 2001, 2, 9, 3, 45, 00
-        # 2001, 2, 9, 4, 45, 00
-        # 2001, 2, 9, 4, 46, 00
-        # 2001, 2, 9, 4, 46, 01
-      ).to eq(Time.new(2001, 2, 9, 4, 46, 01))
-
-      expect(
-        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
-          .after(@end_of_january)
-        # 2000, 1, 31, 3, 45, 00
-        # 2001, 1, 31, 3, 45, 00
-        # 2001, 2, 28, 3, 45, 00
-        # 2001, 3, 7,  3, 45, 00
-        # 2001, 3, 8,  3, 45, 00
-        # 2001, 3, 8,  4, 45, 00
-        # 2001, 3, 8,  4, 46, 00
-        # 2001, 3, 8,  4, 46, 01
-      ).to eq(Time.new(2001, 3, 8,  4, 46, 01))
-    end
-  end
-
   describe "#new" do
-    it "can construct a new `Duration` from a hash of units" do
+    it "constructs a new `Duration` from a hash of units" do
       duration = Timerizer::Duration.new
       expect(duration.get(:seconds)).to eq(0)
       expect(duration.get(:months)).to eq(0)
@@ -111,8 +25,96 @@ RSpec.describe Timerizer::Duration do
     end
   end
 
+  describe "#before" do
+    let(:time) { Time.new(2000, 1, 1, 3, 45, 00) }
+    let(:end_of_march) { Time.new(2000, 3, 31, 3, 45, 00) }
+
+    it "returns the time before the given duration" do
+      expect(5.minutes.before(time)).to eq(Time.new(2000, 1, 1, 3, 40, 00))
+      expect(5.months.before(time)).to eq(Time.new(1999, 8, 1, 3, 45, 00))
+      expect(65.months.before(time)).to eq(Time.new(1994, 8, 1, 3, 45, 00))
+
+      expect(
+        (60.minutes 12.months).before(time)
+      ).to eq(Time.new(1999, 1, 1, 2, 45, 00))
+
+      expect(
+        1.month.before(end_of_march)
+      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).before(time)
+        # 2000, 1, 1, 3, 45, 00
+        # 1999, 1, 1, 3, 45, 00
+        # 1998, 12, 1, 3, 45, 00
+        # 1998, 11, 25, 3, 45, 00
+        # 1998, 11, 24, 3, 45, 00
+        # 1998, 11, 24, 2, 45, 00
+        # 1998, 11, 24, 2, 44, 00
+        # 1998, 11, 24, 2, 43, 59
+      ).to eq(Time.new(1998, 11, 23, 2, 43, 59))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
+          .before(end_of_march)
+        # 2000, 3, 31, 3, 45, 00
+        # 1999, 3, 31, 3, 45, 00
+        # 1999, 2, 28, 3, 45, 00
+        # 1999, 2, 21, 3, 45, 00
+        # 1999, 2, 20, 3, 45, 00
+        # 1999, 2, 20, 2, 45, 00
+        # 1999, 2, 20, 2, 44, 00
+        # 1999, 2, 20, 2, 43, 59
+      ).to eq(Time.new(1999, 2, 20, 2, 43, 59))
+    end
+  end
+
+  describe "#after" do
+    let(:time) { Time.new(2000, 1, 1, 3, 45, 00) }
+    let(:end_of_january) { Time.new(2000, 1, 31, 3, 45, 00) }
+
+    it "retruns the time after the given duration" do
+      expect(5.minutes.after(time)).to eq(Time.new(2000, 1, 1, 3, 50, 00))
+      expect(5.months.after(time)).to eq(Time.new(2000, 6, 1, 3, 45, 00))
+      expect(65.months.after(time)).to eq(Time.new(2005, 6, 1, 3, 45, 00))
+
+      expect(
+        (60.minutes 12.months).after(time)
+      ).to eq(Time.new(2001, 1, 1, 4, 45, 00))
+
+      expect(
+        1.month.after(end_of_january)
+      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).after(time)
+        # 2000, 1, 1, 3, 45, 00
+        # 2001, 1, 1, 3, 45, 00
+        # 2001, 2, 1, 3, 45, 00
+        # 2001, 2, 8, 3, 45, 00
+        # 2001, 2, 9, 3, 45, 00
+        # 2001, 2, 9, 4, 45, 00
+        # 2001, 2, 9, 4, 46, 00
+        # 2001, 2, 9, 4, 46, 01
+      ).to eq(Time.new(2001, 2, 9, 4, 46, 01))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
+          .after(end_of_january)
+        # 2000, 1, 31, 3, 45, 00
+        # 2001, 1, 31, 3, 45, 00
+        # 2001, 2, 28, 3, 45, 00
+        # 2001, 3, 7,  3, 45, 00
+        # 2001, 3, 8,  3, 45, 00
+        # 2001, 3, 8,  4, 45, 00
+        # 2001, 3, 8,  4, 46, 00
+        # 2001, 3, 8,  4, 46, 01
+      ).to eq(Time.new(2001, 3, 8,  4, 46, 01))
+    end
+  end
+
   describe "#to_wall" do
-    it "calculates an equivalent WallClock time" do
+    it "returns an equivalent `WallClock` time" do
       expect(
         (5.hours 30.minutes).to_wall
       ).to eq(Timerizer::WallClock.new(5, 30))
@@ -225,7 +227,7 @@ RSpec.describe Timerizer::Duration do
   end
 
   describe "#to_unit" do
-    it "converts any `Duration` to seconds" do
+    it "converts a `Duration` to seconds" do
       expect(1.second.to_unit(:second)).to eq(1)
       expect((10.minutes 3.seconds).to_unit(:second)).to eq((10 * 60) + 3)
       expect((1.hour 4.minutes).to_unit(:second)).to eq((60 * 60) + (4 * 60))
@@ -237,7 +239,26 @@ RSpec.describe Timerizer::Duration do
       expect((1.year 1.second).to_unit(:second)).to eq((365 * 24 * 60 * 60) + 1)
     end
 
-    it "converts any `Duration` to any second-based unit" do
+    it "converts a negative `Duration` to seconds" do
+      expect((-1.second).to_unit(:second)).to eq(-1)
+      expect((-(10.minutes 3.seconds)).to_unit(:second)).to eq(-(10 * 60) - 3)
+      expect(((-10).minutes + 3.seconds).to_unit(:second)).to eq(-(10 * 60) + 3)
+      expect((-3.days).to_unit(:seconds)).to eq(-3 * 24 * 60 * 60)
+      expect((-2).weeks.to_unit(:seconds)).to eq(-2 * 7 * 24 * 60 * 60)
+
+      expect((-1).month.to_unit(:second)).to eq(-30 * 24 * 60 * 60)
+      expect((-1).year.to_unit(:second)).to eq(-365 * 24 * 60 * 60)
+
+      expect(
+        -(1.year 1.second).to_unit(:second)
+      ).to eq(-(365 * 24 * 60 * 60) - 1)
+
+      expect(
+        ((-1).year + 1.second).to_unit(:second)
+      ).to eq(-(365 * 24 * 60 * 60) + 1)
+    end
+
+    it "converts a `Duration` to any second-based unit" do
       expect(1.minute.to_unit(:minute)).to eq(1)
       expect((10.hours 3.minutes).to_unit(:minutes)).to eq((10 * 60) + 3)
       expect(2.days.to_unit(:hour)).to eq(2 * 24)
@@ -246,6 +267,22 @@ RSpec.describe Timerizer::Duration do
 
       expect(1.month.to_unit(:days)).to eq(30)
       expect(1.year.to_unit(:days)).to eq(365)
+      expect((1.year 3.months).to_unit(:days)).to eq(365 + (3 * 30))
+    end
+
+    it "converts a negative `Duration` to any second-based unit" do
+      expect((-1).minute.to_unit(:minute)).to eq(-1)
+      expect((-(10.hours 3.minutes)).to_unit(:minutes)).to eq(-(10 * 60) - 3)
+      expect((-2).days.to_unit(:hour)).to eq(-2 * 24)
+      expect((-3).days.to_unit(:day)).to eq(-3)
+      expect((-2).weeks.to_unit(:week)).to eq(-2)
+
+      expect((-1).month.to_unit(:days)).to eq(-30)
+      expect((-1).year.to_unit(:days)).to eq(-365)
+      expect((-(1.year 3.months)).to_unit(:days)).to eq(-365 - (3 * 30))
+      expect(
+        ((-1.year) + 3.months).to_unit(:days)
+      ).to eq(-9 * 30)
     end
 
     it "converts any `Duration` to months" do
@@ -281,10 +318,11 @@ RSpec.describe Timerizer::Duration do
       expect(
         (2.years 14.months).to_units(:years, :hours)
       ).to eq(years: 3, hours: 1_440)
+    end
 
+    it "can break down a negative `Duration`" do
       expect(-365.days.to_units(:hours)).to eq(hours: -365 * 24)
       expect(-180.days.to_units(:weeks, :days)).to eq(weeks: -25, days: -5)
-
 
       expect(
         -90.minutes.to_units(:days, :hours, :minutes, :seconds)
@@ -292,7 +330,11 @@ RSpec.describe Timerizer::Duration do
 
       expect(
         (-2.years -14.months).to_units(:years, :hours)
-      ).to eq(years: -3, hours: -1_440)
+      ).to eq(years: -3, hours: -2 * 30 * 24)
+
+      expect(
+        (-14.months + 1.day).to_units(:years, :hours)
+      ).to eq(years: -1, hours: (-2 * 30 * 24) + 24)
     end
 
     it "returns a hash that has the same keys as the passed-in unit names" do
@@ -313,57 +355,65 @@ RSpec.describe Timerizer::Duration do
   end
 
   describe "#normalize" do
-    it "can approxmiate month-based units as second-based units" do
-      expect(1.month.normalize.to_unit(:seconds)).to eq(30 * 24 * 60 * 60)
+    it "approxmiates month-based units as second-based units" do
+      expect(1.month.normalize.get(:seconds)).to eq(30 * 24 * 60 * 60)
 
       expect(
-        11.months.normalize.to_unit(:seconds)
+        11.months.normalize.get(:seconds)
       ).to eq(11 * 30 * 24 * 60 * 60)
 
       expect(
-        14.months.normalize.to_unit(:seconds)
+        14.months.normalize.get(:seconds)
       ).to eq((365 * 24 * 60 * 60) + (2 * 30 * 24 * 60 * 60))
 
       expect(
         (25.months 366.days).normalize.get(:seconds)
       ).to eq((3 * 365 * 24 * 60 * 60) + (30 * 24 * 60 * 60) + (24 * 60 * 60))
+    end
 
-      expect((-1.month).normalize.to_unit(:seconds)).to eq(-30 * 24 * 60 * 60)
+    it "can normalize negative `Duration`s" do
+      expect((-1).month.normalize.get(:seconds)).to eq(-30 * 24 * 60 * 60)
 
       expect(
-        (-11.months).normalize.to_unit(:seconds)
+        (-11).months.normalize.get(:seconds)
       ).to eq(-11 * 30 * 24 * 60 * 60)
 
       expect(
-        (-14).months.normalize.to_unit(:seconds)
+        (-14).months.normalize.get(:seconds)
       ).to eq(-(365 * 24 * 60 * 60) - (2 * 30 * 24 * 60 * 60))
 
       expect(
         (-(25.months 366.days)).normalize.get(:seconds)
       ).to eq(-(3 * 365 * 24 * 60 * 60) - (30 * 24 * 60 * 60) - (24 * 60 * 60))
+
+      expect(
+        (-25.months + 366.days).normalize.get(:seconds)
+        # equivalent to -2 years - 1 month + 1 year + 1 day, which simplifies to
+        # -1 year - 1 month + 1 day
+      ).to eq(-(365 * 24 * 60 * 60) - (30 * 24 * 60 * 60) + (24 * 60 * 60))
     end
 
     it "can normalize using different normalization methods" do
       expect(
-        1.month.normalize(method: :minimum).to_unit(:seconds)
+        1.month.normalize(method: :minimum).get(:seconds)
       ).to eq(28 * 24 * 60 * 60)
 
       expect(
-        1.month.normalize(method: :maximum).to_unit(:seconds)
+        1.month.normalize(method: :maximum).get(:seconds)
       ).to eq(31 * 24 * 60 * 60)
 
       expect(
-        1.year.normalize(method: :minimum).to_unit(:seconds)
+        1.year.normalize(method: :minimum).get(:seconds)
       ).to eq(365 * 24 * 60 * 60)
 
       expect(
-        1.year.normalize(method: :maximum).to_unit(:seconds)
+        1.year.normalize(method: :maximum).get(:seconds)
       ).to eq(366 * 24 * 60 * 60)
     end
   end
 
   describe "#denormalize" do
-    it "can approximate second-based units as month-based units" do
+    it "approximates second-based units as month-based units" do
       expect(30.days.denormalize.to_unit(:months)).to eq(1)
 
       expect(
@@ -373,7 +423,9 @@ RSpec.describe Timerizer::Duration do
       expect(
         (2.years 366.days).denormalize.to_units(:years, :days)
       ).to eq(years: 3, days: 1)
+    end
 
+    it "can denormalize negative `Duration`s" do
       expect((-30.days).denormalize.to_unit(:months)).to eq(-1)
 
       expect(
@@ -383,6 +435,12 @@ RSpec.describe Timerizer::Duration do
       expect(
         (-(2.years 366.days)).denormalize.to_units(:years, :days)
       ).to eq(years: -3, days: -1)
+
+      expect(
+        # equivalent to -2 years + 1 year + 1 day, which simplifies to
+        # -1 year + 1 day
+        ((-2).years + 366.days).denormalize.to_units(:years, :days)
+      ).to eq(years: -1, days: 1)
     end
 
     it "can denormalize using different normalization methods" do

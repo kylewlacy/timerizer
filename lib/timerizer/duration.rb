@@ -317,9 +317,9 @@ module Timerizer
         seconds_per_unit = normal.fetch(:seconds)
         unit_part = remainder.send(:to_unit_part, unit)
 
-        new_normalized = normalized + (unit_part * seconds_per_unit).seconds
-        new_remainder = remainder - Duration.new(unit => unit_part)
-        [new_normalized, new_remainder]
+        normalized += (unit_part * seconds_per_unit).seconds
+        remainder -= Duration.new(unit => unit_part)
+        [normalized, remainder]
       end
 
       normalized, remainder = result
@@ -328,9 +328,6 @@ module Timerizer
 
     def denormalize(method: :standard)
       normalized_units = NORMALIZATION_METHODS.fetch(method).reverse_each
-
-      denormalized = 0.seconds
-      remainder = self
 
       initial = [0.seconds, self]
       result = normalized_units.reduce(initial) do |result, (unit, normal)|
