@@ -359,6 +359,10 @@ class RelativeTime
     denormalized + remainder
   end
 
+  def -@
+    RelativeTime.new(seconds: -@seconds, months: -@months)
+  end
+
   # Add two {RelativeTime}s together.
   # @raise ArgumentError Argument isn't a {RelativeTime}
   # @see #-

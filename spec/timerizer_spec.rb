@@ -290,6 +290,14 @@ RSpec.describe RelativeTime do
     end
   end
 
+  describe "#-@" do
+    it "negates the `RelativeTime`" do
+      expect(-(10.seconds)).to eq((-10).seconds)
+      expect(-(10.years)).to eq((-10).years)
+      expect(-(10.years 10.seconds)).to eq((-10).seconds - 10.years)
+    end
+  end
+
   describe "#normalize" do
     it "can approxmiate month-based units as second-based units" do
       expect(1.month.normalize.to_unit(:seconds)).to eq(30 * 24 * 60 * 60)
