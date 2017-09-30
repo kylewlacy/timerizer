@@ -187,25 +187,30 @@ class RelativeTime
   # @see #after
   # @see #from_now
   def before(time)
-    time = time.to_time - @seconds
+    # TODO: This method should be refactored to negate `self`, then use `#after`
+    time = time.to_time
 
-    new_month = time.month - self.months
-    new_year = time.year - self.years
-    while new_month < 1
-      new_month += 12
-      new_year -= 1
-    end
-    if Date.valid_date?(new_year, new_month, time.day)
-      new_day = time.day
-    else
-      new_day = Date.new(new_year, new_month).days_in_month
-    end
+    prev_day = time.mday
+    prev_month = time.month
+    prev_year = time.year
 
-    new_time = Time.new(
-      new_year, new_month, new_day,
-      time.hour, time.min, time.sec
+    units = self.to_units(:years, :months, :days, :seconds)
+
+    date_in_month = self.class.build_date(
+      prev_year - units[:years],
+      prev_month - units[:months],
+      prev_day
     )
-    Time.at(new_time.to_i, time.nsec/1000)
+    date = date_in_month - units[:days]
+
+    Time.new(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.min,
+      time.sec
+    ) - units[:seconds]
   end
 
   # Return the time between the RelativeTime and the current time.
@@ -220,26 +225,29 @@ class RelativeTime
   # @return [Time] The time after the current RelativeTime and the given time
   # @see #before
   def after(time)
-    time = time.to_time + @seconds
+    time = time.to_time
 
-    new_year = time.year + self.years
-    new_month = time.month + self.months
-    while new_month > 12
-      new_year += 1
-      new_month -= 12
-    end
-    if Date.valid_date?(new_year, new_month, time.day)
-      new_day = time.day
-    else
-      new_day = Date.new(new_year, new_month).days_in_month
-    end
+    prev_day = time.mday
+    prev_month = time.month
+    prev_year = time.year
 
+    units = self.to_units(:years, :months, :days, :seconds)
 
-    new_time = Time.new(
-      new_year, new_month, new_day,
-      time.hour, time.min, time.sec
+    date_in_month = self.class.build_date(
+      prev_year + units[:years],
+      prev_month + units[:months],
+      prev_day
     )
-    Time.at(new_time.to_i, time.nsec/1000.0)
+    date = date_in_month + units[:days]
+
+    Time.new(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.min,
+      time.sec
+    ) + units[:seconds]
   end
 
   # Return the time after the current time and the RelativeTime.
@@ -489,6 +497,33 @@ class RelativeTime
     units.sort_by do |unit|
       index = UNITS.find_index {|u, _| u == self.normalize_unit(unit)}
       index or raise ArgumentError, "Unknown unit: #{unit.inspect}"
+    end
+  end
+
+  def self.mod_div(x, divisor)
+    modulo = x % divisor
+    [modulo, (x - modulo).to_i / divisor]
+  end
+
+  def self.month_carry(month)
+    month_offset, year_carry = self.mod_div(month - 1, 12)
+    [month_offset + 1, year_carry]
+  end
+
+  # Create a date from a given year, month, and date. If the month is not in
+  # the range 1..12, then the month will "wrap around", adjusting the given
+  # year accordingly (so a year of 2017 and a month of 0 corresponds with
+  # 12/2016, a year of 2017 and a month of 13 correpsonds with 1/2018, and so
+  # on). If the given day is out of range of the given month, then the
+  # date will be nudged back to the last day of the month.
+  def self.build_date(year, month, day)
+    new_month, year_carry = self.month_carry(month)
+    new_year = year + year_carry
+
+    if Date.valid_date?(new_year, new_month, day)
+      Date.new(new_year, new_month, day)
+    else
+      Date.new(new_year, new_month, -1)
     end
   end
 end

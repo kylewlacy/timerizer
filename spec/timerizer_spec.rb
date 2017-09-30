@@ -4,37 +4,86 @@ RSpec.describe RelativeTime do
   context "given an existing time" do
     before :all do
       @time = Time.new(2000, 1, 1, 3, 45, 00)
+      @end_of_march = Time.new(2000, 3, 31, 3, 45, 00)
+      @end_of_january = Time.new(2000, 1, 31, 3, 45, 00)
     end
 
     it "calculates a new time before itself" do
       expect(5.minutes.before(@time)).to eq(Time.new(2000, 1, 1, 3, 40, 00))
       expect(5.months.before(@time)).to eq(Time.new(1999, 8, 1, 3, 45, 00))
+      expect(65.months.before(@time)).to eq(Time.new(1994, 8, 1, 3, 45, 00))
+
+      expect(
+        (60.minutes 12.months).before(@time)
+      ).to eq(Time.new(1999, 1, 1, 2, 45, 00))
+
+      expect(
+        1.month.before(@end_of_march)
+      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).before(@time)
+        # 2000, 1, 1, 3, 45, 00
+        # 1999, 1, 1, 3, 45, 00
+        # 1998, 12, 1, 3, 45, 00
+        # 1998, 11, 25, 3, 45, 00
+        # 1998, 11, 24, 3, 45, 00
+        # 1998, 11, 24, 2, 45, 00
+        # 1998, 11, 24, 2, 44, 00
+        # 1998, 11, 24, 2, 43, 59
+      ).to eq(Time.new(1998, 11, 23, 2, 43, 59))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
+          .before(@end_of_march)
+        # 2000, 3, 31, 3, 45, 00
+        # 1999, 3, 31, 3, 45, 00
+        # 1999, 2, 28, 3, 45, 00
+        # 1999, 2, 21, 3, 45, 00
+        # 1999, 2, 20, 3, 45, 00
+        # 1999, 2, 20, 2, 45, 00
+        # 1999, 2, 20, 2, 44, 00
+        # 1999, 2, 20, 2, 43, 59
+      ).to eq(Time.new(1999, 2, 20, 2, 43, 59))
     end
 
     it "calculates a new time after itself" do
       expect(5.minutes.after(@time)).to eq(Time.new(2000, 1, 1, 3, 50, 00))
       expect(5.months.after(@time)).to eq(Time.new(2000, 6, 1, 3, 45, 00))
-    end
-
-    it "properly handles large periods of time" do
-      expect(65.months.before(@time)).to eq(Time.new(1994, 8, 1, 3, 45, 00))
       expect(65.months.after(@time)).to eq(Time.new(2005, 6, 1, 3, 45, 00))
-    end
-  end
 
-  context "given an odd time case" do
-    it "properly calculates the time before it" do
-      end_of_march = Time.new(2000, 3, 31, 3, 45, 00)
       expect(
-        1.month.before(end_of_march)
-      ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
-    end
+        (60.minutes 12.months).after(@time)
+      ).to eq(Time.new(2001, 1, 1, 4, 45, 00))
 
-    it "properly calculates the time after it" do
-      end_of_january = Time.new(2000, 1, 31, 3, 45, 00)
       expect(
-        1.month.after(end_of_january)
+        1.month.after(@end_of_january)
       ).to eq(Time.new(2000, 2, 29, 3, 45, 00))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second).after(@time)
+        # 2000, 1, 1, 3, 45, 00
+        # 2001, 1, 1, 3, 45, 00
+        # 2001, 2, 1, 3, 45, 00
+        # 2001, 2, 8, 3, 45, 00
+        # 2001, 2, 9, 3, 45, 00
+        # 2001, 2, 9, 4, 45, 00
+        # 2001, 2, 9, 4, 46, 00
+        # 2001, 2, 9, 4, 46, 01
+      ).to eq(Time.new(2001, 2, 9, 4, 46, 01))
+
+      expect(
+        (1.year 1.month 1.week 1.day 1.hour 1.minute 1.second)
+          .after(@end_of_january)
+        # 2000, 1, 31, 3, 45, 00
+        # 2001, 1, 31, 3, 45, 00
+        # 2001, 2, 28, 3, 45, 00
+        # 2001, 3, 7,  3, 45, 00
+        # 2001, 3, 8,  3, 45, 00
+        # 2001, 3, 8,  4, 45, 00
+        # 2001, 3, 8,  4, 46, 00
+        # 2001, 3, 8,  4, 46, 01
+      ).to eq(Time.new(2001, 3, 8,  4, 46, 01))
     end
   end
 
