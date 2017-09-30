@@ -177,13 +177,48 @@ RSpec.describe RelativeTime do
     end
   end
 
-  describe "#in_seconds" do
-    it "converts a `RelativeTime` to seconds" do
+  describe "unit conversions" do
+    it "converts any `RelativeTime` to seconds" do
       expect(1.second.in_seconds).to eq(1)
       expect((10.minutes 3.seconds).in_seconds).to eq((10 * 60) + 3)
       expect((1.hour 4.minutes).in_seconds).to eq((60 * 60) + (4 * 60))
       expect(3.days.in_seconds).to eq(3 * 24 * 60 * 60)
       expect(2.weeks.in_seconds).to eq(2 * 7 * 24 * 60 * 60)
+
+      expect(1.month.in_seconds).to eq(30 * 24 * 60 * 60)
+      expect(1.year.in_seconds).to eq(365 * 24 * 60 * 60)
+      expect((1.year 1.second).in_seconds).to eq((365 * 24 * 60 * 60) + 1)
+    end
+
+    it "converts any `RelativeTime` to any second-based unit" do
+      expect(1.minute.in_minutes).to eq(1)
+      expect((10.hours 3.minutes).in_minutes).to eq((10 * 60) + 3)
+      expect(2.days.in_hours).to eq(2 * 24)
+      expect(3.days.in_days).to eq(3)
+      expect(2.weeks.in_weeks).to eq(2)
+
+      expect(1.month.in_days).to eq(30)
+      expect(1.year.in_days).to eq(365)
+    end
+
+    it "converts any `RelativeTime` to months" do
+      expect(1.month.in_months).to eq(1)
+      expect(366.days.in_months).to eq(12)
+      expect(10.years.in_months).to eq(120)
+      expect((366.days 1.month).in_months).to eq(13)
+    end
+
+    it "converts any `RelativeTime` to any month-based unit" do
+      expect(1.year.in_years).to eq(1)
+      expect(732.days.in_years).to eq(2)
+      expect(500.years.in_centuries).to eq(5)
+      expect((3_660.days 12.month).in_years).to eq(11)
+    end
+
+    it "truncates any partial units that cannot be represented exactly" do
+      expect(1.second.in_minutes).to eq(0)
+      expect((3.days 2.seconds).in_minutes).to eq(3 * 24 * 60)
+      expect((367.days).in_years).to eq(1)
     end
   end
 

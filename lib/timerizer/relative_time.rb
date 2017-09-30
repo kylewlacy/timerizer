@@ -264,13 +264,13 @@ class RelativeTime
     if @@in_seconds.has_key? unit
       class_eval "
         def #{in_method}
-          @seconds / #{@@in_seconds[unit]}
+          self.normalize.get(:seconds) / #{@@in_seconds[unit]}
         end
       "
     elsif @@in_months.has_key? unit
       class_eval "
         def #{in_method}
-          @months / #{@@in_months[unit]}
+          self.denormalize.get(:months) / #{@@in_months[unit]}
         end
       "
     end
