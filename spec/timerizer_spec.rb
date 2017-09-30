@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe RelativeTime do
+RSpec.describe Duration do
   context "given an existing time" do
     before :all do
       @time = Time.new(2000, 1, 1, 3, 45, 00)
@@ -88,26 +88,26 @@ RSpec.describe RelativeTime do
   end
 
   describe "#new" do
-    it "can construct a new `RelativeTime` from a hash of units" do
-      relative_time = RelativeTime.new
-      expect(relative_time.get(:seconds)).to eq(0)
-      expect(relative_time.get(:months)).to eq(0)
+    it "can construct a new `Duration` from a hash of units" do
+      duration = Duration.new
+      expect(duration.get(:seconds)).to eq(0)
+      expect(duration.get(:months)).to eq(0)
 
-      relative_time = RelativeTime.new(seconds: 10)
-      expect(relative_time.get(:seconds)).to eq(10)
-      expect(relative_time.get(:months)).to eq(0)
+      duration = Duration.new(seconds: 10)
+      expect(duration.get(:seconds)).to eq(10)
+      expect(duration.get(:months)).to eq(0)
 
-      relative_time = RelativeTime.new(second: 10, minute: 20, hours: 30)
-      expect(relative_time.get(:seconds)).to eq(10 + (20 * 60) + (30 * 60 * 60))
-      expect(relative_time.get(:months)).to eq(0)
+      duration = Duration.new(second: 10, minute: 20, hours: 30)
+      expect(duration.get(:seconds)).to eq(10 + (20 * 60) + (30 * 60 * 60))
+      expect(duration.get(:months)).to eq(0)
 
-      relative_time = RelativeTime.new(seconds: 10, months: 20)
-      expect(relative_time.get(:seconds)).to eq(10)
-      expect(relative_time.get(:months)).to eq(20)
+      duration = Duration.new(seconds: 10, months: 20)
+      expect(duration.get(:seconds)).to eq(10)
+      expect(duration.get(:months)).to eq(20)
 
-      relative_time = RelativeTime.new(hours: 1, days: 2, year: 10)
-      expect(relative_time.get(:seconds)).to eq((60 * 60) + (2 * 24 * 60 * 60))
-      expect(relative_time.get(:months)).to eq(10 * 12)
+      duration = Duration.new(hours: 1, days: 2, year: 10)
+      expect(duration.get(:seconds)).to eq((60 * 60) + (2 * 24 * 60 * 60))
+      expect(duration.get(:months)).to eq(10 * 12)
     end
   end
 
@@ -178,7 +178,7 @@ RSpec.describe RelativeTime do
   end
 
   describe "unit conversions" do
-    it "converts any `RelativeTime` to seconds" do
+    it "converts any `Duration` to seconds" do
       expect(1.second.in_seconds).to eq(1)
       expect((10.minutes 3.seconds).in_seconds).to eq((10 * 60) + 3)
       expect((1.hour 4.minutes).in_seconds).to eq((60 * 60) + (4 * 60))
@@ -190,7 +190,7 @@ RSpec.describe RelativeTime do
       expect((1.year 1.second).in_seconds).to eq((365 * 24 * 60 * 60) + 1)
     end
 
-    it "converts any `RelativeTime` to any second-based unit" do
+    it "converts any `Duration` to any second-based unit" do
       expect(1.minute.in_minutes).to eq(1)
       expect((10.hours 3.minutes).in_minutes).to eq((10 * 60) + 3)
       expect(2.days.in_hours).to eq(2 * 24)
@@ -201,14 +201,14 @@ RSpec.describe RelativeTime do
       expect(1.year.in_days).to eq(365)
     end
 
-    it "converts any `RelativeTime` to months" do
+    it "converts any `Duration` to months" do
       expect(1.month.in_months).to eq(1)
       expect(366.days.in_months).to eq(12)
       expect(10.years.in_months).to eq(120)
       expect((366.days 1.month).in_months).to eq(13)
     end
 
-    it "converts any `RelativeTime` to any month-based unit" do
+    it "converts any `Duration` to any month-based unit" do
       expect(1.year.in_years).to eq(1)
       expect(732.days.in_years).to eq(2)
       expect(500.years.in_centuries).to eq(5)
@@ -223,7 +223,7 @@ RSpec.describe RelativeTime do
   end
 
   describe "#to_unit" do
-    it "converts any `RelativeTime` to seconds" do
+    it "converts any `Duration` to seconds" do
       expect(1.second.to_unit(:second)).to eq(1)
       expect((10.minutes 3.seconds).to_unit(:second)).to eq((10 * 60) + 3)
       expect((1.hour 4.minutes).to_unit(:second)).to eq((60 * 60) + (4 * 60))
@@ -235,7 +235,7 @@ RSpec.describe RelativeTime do
       expect((1.year 1.second).to_unit(:second)).to eq((365 * 24 * 60 * 60) + 1)
     end
 
-    it "converts any `RelativeTime` to any second-based unit" do
+    it "converts any `Duration` to any second-based unit" do
       expect(1.minute.to_unit(:minute)).to eq(1)
       expect((10.hours 3.minutes).to_unit(:minutes)).to eq((10 * 60) + 3)
       expect(2.days.to_unit(:hour)).to eq(2 * 24)
@@ -246,14 +246,14 @@ RSpec.describe RelativeTime do
       expect(1.year.to_unit(:days)).to eq(365)
     end
 
-    it "converts any `RelativeTime` to months" do
+    it "converts any `Duration` to months" do
       expect(1.month.to_unit(:month)).to eq(1)
       expect(366.days.to_unit(:month)).to eq(12)
       expect(10.years.to_unit(:months)).to eq(120)
       expect((366.days 1.month).to_unit(:months)).to eq(13)
     end
 
-    it "converts any `RelativeTime` to any month-based unit" do
+    it "converts any `Duration` to any month-based unit" do
       expect(1.year.to_unit(:year)).to eq(1)
       expect(732.days.to_unit(:years)).to eq(2)
       expect(500.years.to_unit(:centuries)).to eq(5)
@@ -268,7 +268,7 @@ RSpec.describe RelativeTime do
   end
 
   describe "#to_units" do
-    it "breaks down a `RelativeTime` into multiple pieces" do
+    it "breaks down a `Duration` into multiple pieces" do
       expect(365.days.to_units(:hours)).to eq(hours: 365 * 24)
       expect(180.days.to_units(:weeks, :days)).to eq(weeks: 25, days: 5)
 
@@ -303,7 +303,7 @@ RSpec.describe RelativeTime do
   end
 
   describe "#-@" do
-    it "negates the `RelativeTime`" do
+    it "negates the `Duration`" do
       expect(-(10.seconds)).to eq((-10).seconds)
       expect(-(10.years)).to eq((-10).years)
       expect(-(10.years 10.seconds)).to eq((-10).seconds - 10.years)
@@ -402,7 +402,7 @@ RSpec.describe RelativeTime do
     end
   end
 
-  it "can be compared against other `RelativeTime`s" do
+  it "can be compared against other `Duration`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)
 
@@ -478,9 +478,9 @@ RSpec.describe WallClock do
     end.to raise_error(WallClock::TimeOutOfBoundsError)
   end
 
-  it "can be converted to RelativeTime" do
+  it "can be converted to a `Duration`" do
     expect(
-      WallClock.new(5, 30, 27, :pm).to_relative
+      WallClock.new(5, 30, 27, :pm).to_duration
     ).to eq(17.hours 30.minutes 27.seconds)
   end
 
@@ -523,7 +523,7 @@ RSpec.describe WallClock do
 end
 
 RSpec.describe Time do
-  it "can be added or subtracted to RelativeTime" do
+  it "can be added or subtracted to Duration" do
     time = Time.new(2000, 1, 1, 3, 45, 00)
     expect(time + 5.minutes).to eq(Time.new(2000, 1, 1, 3, 50, 00))
     expect(time - 5.minutes).to eq(Time.new(2000, 1, 1, 3, 40, 00))
@@ -590,14 +590,14 @@ RSpec.describe Date do
 end
 
 RSpec.describe Integer do
-  it "makes RelativeTime objects" do
+  it "makes Duration objects" do
     expect(1.minute.get(:seconds)).to eq(60)
     expect(3.hours.get(:seconds)).to eq(10800)
     expect(5.days.get(:seconds)).to eq(432000)
     expect(4.years.get(:months)).to eq(48)
 
-    relative_time = 1.second 2.minutes 3.hours 4.days 5.weeks 6.months 7.years
-    expect(relative_time.get(:seconds)).to eq(3380521)
-    expect(relative_time.get(:months)).to eq(90)
+    duration = 1.second 2.minutes 3.hours 4.days 5.weeks 6.months 7.years
+    expect(duration.get(:seconds)).to eq(3380521)
+    expect(duration.get(:months)).to eq(90)
   end
 end

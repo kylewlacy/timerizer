@@ -1,5 +1,6 @@
-# Represents a relative amount of time. For example, '`5 days`', '`4 years`', and '`5 years, 4 hours, 3 minutes, 2 seconds`' are all RelativeTimes.
-class RelativeTime
+# Represents a duration of time. For example, '5 days', '4 years', and
+# '5 years, 4 hours, 3 minutes, 2 seconds' are all durations conceptually.
+class Duration
   UNITS = {
     seconds: {seconds: 1},
     minutes: {seconds: 60},
@@ -70,14 +71,12 @@ class RelativeTime
     millennium: 12000
   }
 
-  # Average amount of time in a given unit. Used internally within the {#average} and {#unaverage} methods.
   @@average_seconds = {
     month: 2629746,
     year: 31556952
   }
 
-  # Default syntax formats that can be used with #to_s
-  # @see #to_s
+  # Default syntax formats that can be used with {#to_s}.
   SYNTAXES = {
     micro: {
       units: {
@@ -139,7 +138,7 @@ class RelativeTime
     @@in_months
   end
 
-  # Initialize a new instance of RelativeTime.
+  # Initialize a new instance of {Duration}.
   def initialize(units = {})
     @seconds = 0
     @months = 0
@@ -151,19 +150,20 @@ class RelativeTime
     end
   end
 
-  # Compares two RelativeTimes to determine if they are equal
-  # @param [RelativeTime] time The RelativeTime to compare
-  # @return [Boolean] True if both RelativeTimes are equal
-  # @note Be weary of rounding; this method compares both RelativeTimes' base units
+  # Compares two {Duration}s to determine if they are equal
+  # @param [Duration] time The {Duration} to compare to.
+  # @return [Boolean] True if both {Duration}s are equal
+  # @note This method compares both {Duration}s' base units, so consider
+  #   normalizing if needed.
   def ==(time)
-    if time.is_a?(RelativeTime)
+    if time.is_a?(Duration)
       @seconds == time.get(:seconds) && @months == time.get(:months)
     else
       false
     end
   end
 
-  # Return the number of base units in a RelativeTime.
+  # Return the number of base units in a {Duration}.
   # @param [Symbol] unit The unit to return, either :seconds or :months
   # @return [Integer] The requested unit count
   # @raise [ArgumentError] Unit requested was not :seconds or :months
@@ -177,12 +177,16 @@ class RelativeTime
     end
   end
 
-  # Determines the time between RelativeTime and the given time.
+  # Returns the time `self` earlier than the given time.
+  #
   # @param [Time] time The initial time.
-  # @return [Time] The difference between the current RelativeTime and the given time
-  # @example 5 hours before January 1st, 2000 at noon
+  # @return [Time] The time before this {Duration} has elapsed past the
+  #   given time.
+  #
+  # @example 5 minutes before January 1st, 2000 at noon
   #   5.minutes.before(Time.new(2000, 1, 1, 12, 00, 00))
-  #     => 2000-01-01 11:55:00 -0800
+  #   # => 1999-12-31 11:55:00 -0800
+  #
   # @see #ago
   # @see #after
   # @see #from_now
@@ -190,17 +194,29 @@ class RelativeTime
     (-self).after(time)
   end
 
-  # Return the time between the RelativeTime and the current time.
-  # @return [Time] The difference between the current RelativeTime and Time#now
+  # Return the time `self` later than the current time.
+  #
+  # @return [Time] The time after this {Duration} has elapsed past the
+  #   current system time.
+  #
   # @see #before
   def ago
     self.before(Time.now)
   end
 
-  # Return the time after the given time according to the current RelativeTime.
-  # @param [Time] time The starting time
-  # @return [Time] The time after the current RelativeTime and the given time
+  # Returns the time `self` later than the given time.
+  #
+  # @param [Time] time The initial time.
+  # @return [Time] The time after this {Duration} has elapsed past the
+  #   given time.
+  #
+  # @example 5 minutes after January 1st, 2000 at noon
+  #   5.minutes.after(Time.new(2000, 1, 1, 12, 00, 00))
+  #   # => 2000-01-01 12:05:00 -0800
+  #
+  # @see #ago
   # @see #before
+  # @see #from_now
   def after(time)
     time = time.to_time
 
@@ -227,8 +243,11 @@ class RelativeTime
     ) + units[:seconds]
   end
 
-  # Return the time after the current time and the RelativeTime.
-  # @return [Time] The time after the current time
+  # Return the time `self` earlier than the current time.
+  #
+  # @return [Time] The time current system time before this {Duration}.
+  #
+  # @see #before
   def from_now
     self.after(Time.now)
   end
@@ -279,7 +298,7 @@ class RelativeTime
 
     _, parts = sorted_units.reduce([self, {}]) do |(remainder, parts), unit|
       part = remainder.to_unit(unit)
-      new_remainder = remainder - RelativeTime.new(unit => part)
+      new_remainder = remainder - Duration.new(unit => part)
 
       [new_remainder, parts.merge(unit => part)]
     end
@@ -298,7 +317,7 @@ class RelativeTime
       unit_part = remainder.send(:to_unit_part, unit)
 
       new_normalized = normalized + (unit_part * seconds_per_unit).seconds
-      new_remainder = remainder - RelativeTime.new(unit => unit_part)
+      new_remainder = remainder - Duration.new(unit => unit_part)
       [new_normalized, new_remainder]
     end
 
@@ -322,7 +341,7 @@ class RelativeTime
       num_unit = (remainder_seconds.to_f / seconds_per_unit).to_i
       num_seconds_denormalized = num_unit * seconds_per_unit
 
-      denormalized += RelativeTime.new(unit => num_unit)
+      denormalized += Duration.new(unit => num_unit)
       remainder -= num_seconds_denormalized.seconds
 
       [denormalized, remainder]
@@ -333,33 +352,35 @@ class RelativeTime
   end
 
   def -@
-    RelativeTime.new(seconds: -@seconds, months: -@months)
+    Duration.new(seconds: -@seconds, months: -@months)
   end
 
-  # Add two {RelativeTime}s together.
-  # @raise ArgumentError Argument isn't a {RelativeTime}
-  # @see #-
+  # Add two {Duration}s together.
+  #
+  # @raise ArgumentError Argument isn't a {Duration}.
   def +(time)
-    raise ArgumentError unless time.is_a?(RelativeTime)
-    RelativeTime.new(
+    raise ArgumentError unless time.is_a?(Duration)
+    Duration.new(
       seconds: @seconds + time.get(:seconds),
       months: @months + time.get(:months)
     )
   end
 
-  # Find the difference between two {RelativeTime}s.
-  # @raise ArgumentError Argument isn't a {RelativeTime}
-  # @see #+
+  # Find the difference between two {Duration}s.
+  #
+  # @raise ArgumentError Argument isn't a {Duration}.
   def -(time)
-    raise ArgumentError unless time.is_a?(RelativeTime)
-    RelativeTime.new(
+    raise ArgumentError unless time.is_a?(Duration)
+    Duration.new(
       seconds: @seconds - time.get(:seconds),
       months: @months - time.get(:months)
     )
   end
 
-  # Converts {RelativeTime} to {WallClock}
-  # @return [WallClock] {RelativeTime} as {WallClock}
+  # Converts the {Duration} to a {WallClock}.
+  #
+  # @return [WallClock] `self` as a {WallClock}
+  #
   # @example
   #   (17.hours 30.minutes).to_wall
   #     # => 5:30:00 PM
@@ -368,7 +389,7 @@ class RelativeTime
     WallClock.new(second: @seconds)
   end
 
-  # Convert {RelativeTime} to a human-readable format.
+  # Convert a {Duration} to a human-readable format.
   def to_s(format = :long, options = nil)
     syntax =
       case format
@@ -417,22 +438,22 @@ class RelativeTime
 
   private
 
-  # This method is like `#to_unit`, except it does not perform normalization
-  # first. Put another way, this method is essentially the same as `#to_unit`
-  # except it does not normalize the value first. It is similar to `#get` except
+  # This method is like {#to_unit}, except it does not perform normalization
+  # first. Put another way, this method is essentially the same as {#to_unit}
+  # except it does not normalize the value first. It is similar to {#get} except
   # that it can be used with non-primitive units as well.
   #
   # @example
   # (1.year 1.month 365.days).to_unit_part(:month)
   # # => 13
   # # Returns 13 because that is the number of months contained exactly within
-  # # the sepcified `RelativeTime`. Since "days" cannot be translated to an
+  # # the sepcified {Duration}. Since "days" cannot be translated to an
   # # exact number of months, they *are not* factored into the result at all.
   #
   # (25.months).to_unit_part(:year)
   # # => 2
   # # Returns 2 becasue that is the number of months contained exactly within
-  # # the specified `RelativeTime`. Since "years" is essentially an alias
+  # # the specified {Duration}. Since "years" is essentially an alias
   # # for "12 months", months *are* factored into the result.
   def to_unit_part(unit)
     unit_details = self.class.resolve_unit(unit)
@@ -470,7 +491,7 @@ class RelativeTime
   end
 
   # Create a date from a given year, month, and date. If the month is not in
-  # the range 1..12, then the month will "wrap around", adjusting the given
+  # the range `1..12`, then the month will "wrap around", adjusting the given
   # year accordingly (so a year of 2017 and a month of 0 corresponds with
   # 12/2016, a year of 2017 and a month of 13 correpsonds with 1/2018, and so
   # on). If the given day is out of range of the given month, then the

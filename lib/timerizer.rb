@@ -1,8 +1,8 @@
 require "date"
-require_relative "./timerizer/relative_time"
+require_relative "./timerizer/duration"
 require_relative "./timerizer/wall_clock"
 
-# {Time} class monkeywrenched with {RelativeTime} support.
+# {Time} class monkey-patched with {Duration} support.
 class Time
   # Represents an error where two times were expected to be in the future, but were in the past.
   # @see #until
@@ -37,7 +37,7 @@ class Time
 
   alias_method :add, :+
   def +(time)
-    if time.is_a? RelativeTime
+    if time.is_a?(Duration)
       time.after(self)
     else
       self.add(time)
@@ -46,7 +46,7 @@ class Time
 
   alias_method :subtract, :-
   def -(time)
-    if time.is_a? RelativeTime
+    if time.is_a?(Duration)
       time.before(self)
     else
       self.subtract(time)
@@ -55,7 +55,7 @@ class Time
 
   # Calculates the time until a given time
   # @param [Time] time The time until now to calculate
-  # @return [RelativeTime] The time until the provided time
+  # @return [Duration] The time until the provided time
   # @raise[TimeIsInThePastException] The provided time is in the past
   # @example
   #   Time.until(Time.new(2012, 12, 25))
@@ -70,7 +70,7 @@ class Time
 
   # Calculates the time since a given time
   # @param [Time] time The time to calculate since now
-  # @return [RelativeTime] The time since the provided time
+  # @return [Duration] The time since the provided time
   # @raise[TimeIsInTheFutureException] The provided time is in the future
   # @example
   #   Time.since(Time.new(2011, 10, 31))
@@ -86,7 +86,7 @@ class Time
   # Calculate the amount of time between two times.
   # @param [Time] time1 The initial time
   # @param [Time] time2 The final time
-  # @return [RelativeTime] Calculated time between time1 and time2
+  # @return [Duration] Calculated time between time1 and time2
   # @example
   #   Time.between(1.minute.ago, 1.hour.ago)
   #     => 59.minutes
@@ -96,7 +96,7 @@ class Time
   def self.between(time1, time2)
     time_between = (time2.to_time - time1.to_time).abs
 
-    RelativeTime.new(seconds: time_between.round)
+    Duration.new(seconds: time_between.round)
   end
 
   # Convert {Time} to {Date}.
@@ -126,7 +126,7 @@ class Time
   end
 end
 
-# {Date} class monkeywrenched with {RelativeTime} helpers.
+# {Date} class monkey-patched with {Duration} helpers.
 class Date
   # Return the number of days in a given month.
   # @return [Integer] Number of days in the month of the {Date}.
@@ -170,16 +170,16 @@ class Date
   end
 end
 
-# Monkeywrenched {Integer} class enabled to return {RelativeTime} objects.
+# Monkey-patched {Integer} class enabled to return {Duration} objects.
 # @example
 #   5.minutes
 #     => 5 minutes
-# @see {RelativeTime#units}
+# @see Duration#units
 class Integer
-  RelativeTime.units.each do |unit, plural|
+  Duration.units.each do |unit, plural|
     class_eval "
-      def #{unit}(added_time = RelativeTime.new)
-        time = RelativeTime.new(:#{unit} => self)
+      def #{unit}(added_time = Duration.new)
+        time = Duration.new(:#{unit} => self)
         time + added_time unless added_time.nil?
       end
     "

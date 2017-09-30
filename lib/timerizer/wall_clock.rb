@@ -1,4 +1,4 @@
-# Represents a time, but not a date. '`7:00 PM`' would be an example of a WallClock object
+# Represents a time, but not a date. '7:00 PM' would be an example of a WallClock object
 class WallClock
   # Represents an error where an invalid meridiem was passed to WallClock.
   # @see #new
@@ -56,11 +56,11 @@ class WallClock
     end
 
     @seconds =
-      RelativeTime.units_in_seconds.fetch(:hour) * hour +
-      RelativeTime.units_in_seconds.fetch(:minute) * minute +
+      Duration.units_in_seconds.fetch(:hour) * hour +
+      Duration.units_in_seconds.fetch(:minute) * minute +
       second
 
-    if @seconds >= RelativeTime.units_in_seconds.fetch(:day)
+    if @seconds >= Duration.units_in_seconds.fetch(:day)
       raise TimeOutOfBoundsError
     end
   end
@@ -110,32 +110,32 @@ class WallClock
   # Get the time of the WallClock, in minutes
   # @return [Integer] The total time of the WallClock, in minutes
   def in_minutes
-    @seconds / RelativeTime.units_in_seconds[:minute]
+    @seconds / Duration.units_in_seconds[:minute]
   end
 
   # Get the time of the WallClock, in hours
   # @return [Integer] The total time of the WallClock, in hours
   def in_hours
-    @seconds / RelativeTime.units_in_seconds[:hour]
+    @seconds / Duration.units_in_seconds[:hour]
   end
 
   # Get the second of the WallClock.
   # @return [Integer] The second component of the WallClock
   def second
-    self.to_relative.seconds
+    self.to_duration.seconds
   end
 
   # Get the minute of the WallClock.
   # @return [Integer] The minute component of the WallClock
   def minute
-    self.to_relative.minutes
+    self.to_duration.minutes
   end
 
   # Get the hour of the WallClock.
   # @param [Symbol] system The houring system to use (either `:twelve_hour` or `:twenty_four_hour`; default `:twenty_four_hour`)
   # @return [Integer] The hour component of the WallClock
   def hour(system = :twenty_four_hour)
-    hour = self.to_relative.hours
+    hour = self.to_duration.hours
     if system == :twelve_hour
       if hour == 0
         12
@@ -167,13 +167,13 @@ class WallClock
     self
   end
 
-  # Converts {WallClock} to {RelativeTime}
-  # @return [RelativeTime] {WallClock} as {RelativeTime}
+  # Converts `self` to a {Duration}
+  # @return [Duration] `self` as a {Duration}
   # @example
   #   time = WallClock.new(5, 30, :pm)
-  #   time.to_relative
+  #   time.to_duration
   #     => 5 hours, 30 minutes
-  def to_relative
+  def to_duration
     @seconds.seconds
   end
 
