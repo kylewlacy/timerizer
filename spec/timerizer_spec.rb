@@ -279,6 +279,18 @@ RSpec.describe RelativeTime do
       expect(
         (2.years 14.months).to_units(:years, :hours)
       ).to eq(years: 3, hours: 1_440)
+
+      expect(-365.days.to_units(:hours)).to eq(hours: -365 * 24)
+      expect(-180.days.to_units(:weeks, :days)).to eq(weeks: -25, days: -5)
+
+
+      expect(
+        -90.minutes.to_units(:days, :hours, :minutes, :seconds)
+      ).to eq(days: 0, hours: -1, minutes: -30, seconds: 0)
+
+      expect(
+        (-2.years -14.months).to_units(:years, :hours)
+      ).to eq(years: -3, hours: -1_440)
     end
 
     it "returns a hash that has the same keys as the passed-in unit names" do
@@ -313,6 +325,20 @@ RSpec.describe RelativeTime do
       expect(
         (25.months 366.days).normalize.get(:seconds)
       ).to eq((3 * 365 * 24 * 60 * 60) + (30 * 24 * 60 * 60) + (24 * 60 * 60))
+
+      expect((-1.month).normalize.to_unit(:seconds)).to eq(-30 * 24 * 60 * 60)
+
+      expect(
+        (-11.months).normalize.to_unit(:seconds)
+      ).to eq(-11 * 30 * 24 * 60 * 60)
+
+      expect(
+        (-14).months.normalize.to_unit(:seconds)
+      ).to eq(-(365 * 24 * 60 * 60) - (2 * 30 * 24 * 60 * 60))
+
+      expect(
+        (-(25.months 366.days)).normalize.get(:seconds)
+      ).to eq(-(3 * 365 * 24 * 60 * 60) - (30 * 24 * 60 * 60) - (24 * 60 * 60))
     end
 
     it "can normalize using different normalization methods" do
@@ -345,6 +371,16 @@ RSpec.describe RelativeTime do
       expect(
         (2.years 366.days).denormalize.to_units(:years, :days)
       ).to eq(years: 3, days: 1)
+
+      expect((-30.days).denormalize.to_unit(:months)).to eq(-1)
+
+      expect(
+        (-(1.month 100.days)).denormalize.to_units(:months, :days)
+      ).to eq(months: -4, days: -10)
+
+      expect(
+        (-(2.years 366.days)).denormalize.to_units(:years, :days)
+      ).to eq(years: -3, days: -1)
     end
 
     it "can denormalize using different normalization methods" do

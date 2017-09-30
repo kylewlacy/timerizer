@@ -288,10 +288,10 @@ class RelativeTime
 
     if unit_details.has_key?(:seconds)
       seconds = self.normalize.get(:seconds)
-      seconds / unit_details.fetch(:seconds)
+      (seconds.to_f / unit_details.fetch(:seconds)).to_i
     elsif unit_details.has_key?(:months)
       months = self.denormalize.get(:months)
-      months / unit_details.fetch(:months)
+      (months.to_f / unit_details.fetch(:months)).to_i
     else
       raise "Unit should have key :seconds or :months"
     end
@@ -312,9 +312,6 @@ class RelativeTime
 
   def normalize(method: :standard)
     normalized_units = NORMALIZATION_METHODS.fetch(method).reverse_each
-
-    normalized = 0.seconds
-    remainder = self
 
     initial = [0.seconds, self]
     result = normalized_units.reduce(initial) do |result, (unit, normal)|
@@ -345,10 +342,9 @@ class RelativeTime
       seconds_per_unit = normal.fetch(:seconds)
       remainder_seconds = remainder.get(:seconds)
 
-      num_unit = remainder_seconds / seconds_per_unit
+      num_unit = (remainder_seconds.to_f / seconds_per_unit).to_i
       num_seconds_denormalized = num_unit * seconds_per_unit
 
-      # TODO: Refactor to avoid calling `#send`
       denormalized += RelativeTime.new(unit => num_unit)
       remainder -= num_seconds_denormalized.seconds
 
@@ -466,10 +462,10 @@ class RelativeTime
 
     if unit_details.has_key?(:seconds)
       seconds = self.get(:seconds)
-      seconds / unit_details.fetch(:seconds)
+      (seconds.to_f / unit_details.fetch(:seconds)).to_i
     elsif unit_details.has_key?(:months)
       months = self.get(:months)
-      months / unit_details.fetch(:months)
+      (months.to_f / unit_details.fetch(:months)).to_i
     else
       raise "Unit should have key :seconds or :months"
     end
