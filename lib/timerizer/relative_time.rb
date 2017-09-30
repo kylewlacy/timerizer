@@ -13,7 +13,7 @@ class RelativeTime
     millennia: {months: 12 * 1000}
   }
 
-  UNIT_ALIASES = {
+  UNIT_ALIASES = UNITS.merge(
     second: UNITS[:seconds],
     minute: UNITS[:minutes],
     hour: UNITS[:hours],
@@ -24,7 +24,7 @@ class RelativeTime
     decade: UNITS[:decades],
     century: UNITS[:centuries],
     millennium: UNITS[:millennia]
-  }
+  )
 
   NORMALIZATION_METHODS = {
     standard: {
@@ -472,13 +472,7 @@ class RelativeTime
   end
 
   def self.resolve_unit(unit)
-    if UNITS.has_key?(unit)
-      UNITS.fetch(unit)
-    elsif UNIT_ALIASES.has_key?(unit)
-      UNIT_ALIASES.fetch(unit)
-    else
-      raise ArgumentError, "Unknown unit: #{unit.inspect}"
-    end
+    UNIT_ALIASES[unit] or raise ArgumentError, "Unknown unit: #{unit.inspect}"
   end
 
   def self.sort_units(units)
