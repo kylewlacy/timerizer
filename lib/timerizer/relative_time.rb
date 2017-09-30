@@ -261,33 +261,26 @@ class RelativeTime
     count_method = plural
     superior_unit = @@units.keys.index(unit) + 1
 
-    if @@in_seconds.has_key? unit
-      class_eval "
-        def #{in_method}
-          self.normalize.get(:seconds) / #{@@in_seconds[unit]}
-        end
-      "
-    elsif @@in_months.has_key? unit
-      class_eval "
-        def #{in_method}
-          self.denormalize.get(:months) / #{@@in_months[unit]}
-        end
-      "
+    if @@in_seconds.has_key?(unit)
+      define_method(in_method) do
+        self.normalize.get(:seconds) / @@in_seconds[unit]
+      end
+    elsif @@in_months.has_key?(unit)
+      define_method(in_method) do
+        self.denormalize.get(:months) / @@in_months[unit]
+      end
     end
 
     in_superior = "in_#{@@units.values[superior_unit]}"
     count_superior = @@units.keys[superior_unit]
 
-
-    class_eval "
-      def #{count_method}
-        time = self.#{in_method}
-        if @@units.length > #{superior_unit}
-          time -= self.#{in_superior}.#{count_superior}.#{in_method}
-        end
-        time
+    define_method(count_method) do
+      time = self.send(in_method)
+      if @@units.length > superior_unit
+        time -= self.send(in_superior).send(count_superior).send(in_method)
       end
-    "
+      time
+    end
   end
 
   def to_unit(unit)
