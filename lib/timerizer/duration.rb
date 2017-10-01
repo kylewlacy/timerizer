@@ -285,10 +285,10 @@ module Timerizer
 
       if unit_details.has_key?(:seconds)
         seconds = self.normalize.get(:seconds)
-        (seconds.to_f / unit_details.fetch(:seconds)).to_i
+        self.class.div(seconds, unit_details.fetch(:seconds))
       elsif unit_details.has_key?(:months)
         months = self.denormalize.get(:months)
-        (months.to_f / unit_details.fetch(:months)).to_i
+        self.class.div(months, unit_details.fetch(:months))
       else
         raise "Unit should have key :seconds or :months"
       end
@@ -336,7 +336,7 @@ module Timerizer
         seconds_per_unit = normal.fetch(:seconds)
         remainder_seconds = remainder.get(:seconds)
 
-        num_unit = (remainder_seconds.to_f / seconds_per_unit).to_i
+        num_unit = self.class.div(remainder_seconds, seconds_per_unit)
         num_seconds_denormalized = num_unit * seconds_per_unit
 
         denormalized += Duration.new(unit => num_unit)
@@ -458,10 +458,10 @@ module Timerizer
 
       if unit_details.has_key?(:seconds)
         seconds = self.get(:seconds)
-        (seconds.to_f / unit_details.fetch(:seconds)).to_i
+        self.class.div(seconds, unit_details.fetch(:seconds))
       elsif unit_details.has_key?(:months)
         months = self.get(:months)
-        (months.to_f / unit_details.fetch(:months)).to_i
+        self.class.div(months, unit_details.fetch(:months))
       else
         raise "Unit should have key :seconds or :months"
       end
@@ -481,6 +481,12 @@ module Timerizer
     def self.mod_div(x, divisor)
       modulo = x % divisor
       [modulo, (x - modulo).to_i / divisor]
+    end
+
+    # Like the normal Ruby division operator, except it rounds towards 0 when
+    # dividing `Integer`s (instead of rounding down).
+    def self.div(x, divisor)
+      (x.to_f / divisor).to_i
     end
 
     def self.month_carry(month)
