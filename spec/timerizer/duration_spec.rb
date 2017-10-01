@@ -258,6 +258,34 @@ RSpec.describe Timerizer::Duration do
       ).to eq(-(365 * 24 * 60 * 60) + 1)
     end
 
+    it "converts a fractional `Duration` to seconds" do
+      expect(Timerizer::Duration.new(seconds: 1.0).to_unit(:seconds)).to eq(1.0)
+      expect(Timerizer::Duration.new(seconds: 0.5).to_unit(:seconds)).to eq(0.5)
+
+      expect(
+        Timerizer::Duration.new(minutes: 5.0).to_unit(:seconds)
+      ).to eq(5.0 * 60)
+
+      expect(
+        Timerizer::Duration.new(minutes: 0.5).to_unit(:seconds)
+      ).to eq(0.5 * 60)
+
+      expect(
+        Timerizer::Duration.new(minutes: 0.5, seconds: 5).to_unit(:seconds)
+      ).to eq((0.5 * 60) + 5)
+
+      expect(
+        Timerizer::Duration.new(minutes: -0.5, seconds: 5).to_unit(:seconds)
+      ).to eq((-0.5 * 60) + 5)
+
+      expect(
+        Timerizer::Duration.new(months: 25.5, seconds: -0.5).to_unit(:seconds)
+      ).to eq(
+        # "25.5 months" should be treated as 2 years and 1.5 months
+        (2 * 365 * 24 * 60 * 60) + (1.5 * 30 * 24 * 60 * 60) - 0.5
+      )
+    end
+
     it "converts a `Duration` to any second-based unit" do
       expect(1.minute.to_unit(:minute)).to eq(1)
       expect((10.hours 3.minutes).to_unit(:minutes)).to eq((10 * 60) + 3)
@@ -285,14 +313,71 @@ RSpec.describe Timerizer::Duration do
       ).to eq(-9 * 30)
     end
 
-    it "converts any `Duration` to months" do
+    it "converts a fractional `Duration` to any second-based unit" do
+      expect(Timerizer::Duration.new(minute: -1.0).to_unit(:minute)).to eq(-1.0)
+
+      expect(
+        Timerizer::Duration.new(hours: 10.5, minutes: -0.1).to_unit(:minutes)
+      ).to eq((10.5 * 60) - 0.1)
+
+      expect(
+        Timerizer::Duration.new(days: 0.5).to_unit(:hour)
+      ).to eq(0.5 * 24)
+
+      expect(
+        Timerizer::Duration.new(days: -2.5).to_unit(:hour)
+      ).to eq(-2.5 * 24)
+
+      expect(
+        Timerizer::Duration.new(weeks: -7.5).to_unit(:week)
+      ).to eq(-7.5)
+
+      expect(
+        (-1).month.to_unit(:days)
+      ).to eq(-30)
+
+      expect(
+        (-1).year.to_unit(:days)
+      ).to eq(-365)
+
+      expect(
+        (-(1.year 3.months)).to_unit(:days)
+      ).to eq(-365 - (3 * 30))
+
+      expect(
+        ((-1.year) + 3.months).to_unit(:days)
+      ).to eq(-9 * 30)
+    end
+
+    it "converts a `Duration` to months" do
       expect(1.month.to_unit(:month)).to eq(1)
       expect(366.days.to_unit(:month)).to eq(12)
       expect(10.years.to_unit(:months)).to eq(120)
       expect((366.days 1.month).to_unit(:months)).to eq(13)
     end
 
-    it "converts any `Duration` to any month-based unit" do
+    it "converts a negative `Duration` to months" do
+      expect((-1).month.to_unit(:month)).to eq(-1)
+      expect((-366).days.to_unit(:month)).to eq(-12)
+      expect((-10).years.to_unit(:months)).to eq(-120)
+      expect((-(366.days 1.month)).to_unit(:months)).to eq(-13)
+      expect(((-366).days + 1.month).to_unit(:months)).to eq(-11)
+    end
+
+    xit "converts a fractional `Duration` to months" do
+      expect(
+        Timerizer::Duration.new(month: -0.5).to_unit(:month)
+      ).to eq(-0.5)
+
+      expect(
+        Timerizer::Duration.new(days: -30.0).to_unit(:month)
+      ).to eq(-0.5)
+      expect((-10).years.to_unit(:months)).to eq(-120)
+      expect((-(366.days 1.month)).to_unit(:months)).to eq(-13)
+      expect(((-366).days + 1.month).to_unit(:months)).to eq(-11)
+    end
+
+    it "converts a `Duration` to any month-based unit" do
       expect(1.year.to_unit(:year)).to eq(1)
       expect(732.days.to_unit(:years)).to eq(2)
       expect(500.years.to_unit(:centuries)).to eq(5)

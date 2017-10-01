@@ -312,18 +312,22 @@ module Timerizer
 
       initial = [0.seconds, self]
       result = normalized_units.reduce(initial) do |result, (unit, normal)|
-        normalized, remainder = result
+        normalized, remainder, _ = result
 
         seconds_per_unit = normal.fetch(:seconds)
         unit_part = remainder.send(:to_unit_part, unit)
 
-        normalized += (unit_part * seconds_per_unit).seconds
-        remainder -= Duration.new(unit => unit_part)
-        [normalized, remainder]
+        # Divide `unit_part` into a fractional part and a whole part
+        unit_leftover, unit_whole = self.class.mod_div(unit_part, 1)
+
+        normalized += Duration.new(seconds: unit_whole * seconds_per_unit)
+        remainder -= Duration.new(unit => unit_whole)
+        leftover = Duration.new(seconds: unit_leftover * seconds_per_unit)
+        [normalized, remainder, leftover]
       end
 
-      normalized, remainder = result
-      normalized + remainder
+      normalized, remainder, leftover = result
+      normalized + remainder + leftover
     end
 
     def denormalize(method: :standard)
@@ -340,7 +344,7 @@ module Timerizer
         num_seconds_denormalized = num_unit * seconds_per_unit
 
         denormalized += Duration.new(unit => num_unit)
-        remainder -= num_seconds_denormalized.seconds
+        remainder -= Duration.new(seconds: num_seconds_denormalized)
 
         [denormalized, remainder]
       end
@@ -436,10 +440,9 @@ module Timerizer
 
     private
 
-    # This method is like {#to_unit}, except it does not perform normalization
-    # first. Put another way, this method is essentially the same as {#to_unit}
-    # except it does not normalize the value first. It is similar to {#get}
-    # except that it can be used with non-primitive units as well.
+    # This method "extracts" a unit from a duration. It's similar to {#to_unit},
+    # except it does not perform normalization first. It also ignores parts of
+    # a unit that cannot be represented exactly (similar to {#get}).
     #
     # @example
     # (1.year 1.month 365.days).to_unit_part(:month)
@@ -483,10 +486,12 @@ module Timerizer
       [modulo, (x - modulo).to_i / divisor]
     end
 
-    # Like the normal Ruby division operator, except it rounds towards 0 when
-    # dividing `Integer`s (instead of rounding down).
     def self.div(x, divisor)
-      (x.to_f / divisor).to_i
+      if x >= 0
+        x / divisor
+      else
+        -((-x) / divisor)
+      end
     end
 
     def self.month_carry(month)
