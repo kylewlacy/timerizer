@@ -14,16 +14,16 @@ RSpec.describe Time do
 
   it "calculates the time between two Times" do
     time = 1.minute.ago
-    expect(Time.until(1.minute.from_now).in_seconds).to be_within(1.0).of(60)
-    expect(Time.since(1.hour.ago).in_seconds).to be_within(1.0).of(3600)
+    expect(Time.until(1.minute.from_now).get(:seconds)).to be_within(1.0).of(60)
+    expect(Time.since(1.hour.ago).get(:seconds)).to be_within(1.0).of(3600)
 
     expect(
-      Time.between(1.minute.ago, 2.minutes.ago).in_seconds
+      Time.between(1.minute.ago, 2.minutes.ago).get(:seconds)
     ).to be_within(1.0).of(60)
 
     expect(
-      Time.between(Date.yesterday, Date.tomorrow).in_seconds
-    ).to be_within(1.0).of(2.days.in_seconds)
+      Time.between(Date.yesterday, Date.tomorrow).get(:seconds)
+    ).to be_within(1.0).of(2 * 24 * 60 * 60)
 
     expect do
       Time.until(1.minute.ago)
