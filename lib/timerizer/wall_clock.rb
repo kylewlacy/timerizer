@@ -123,20 +123,20 @@ module Timerizer
     # Get the second of the WallClock.
     # @return [Integer] The second component of the WallClock
     def second
-      self.to_duration.seconds
+      self.to_duration.to_units(:hour, :minute, :second).fetch(:second)
     end
 
     # Get the minute of the WallClock.
     # @return [Integer] The minute component of the WallClock
     def minute
-      self.to_duration.minutes
+      self.to_duration.to_units(:hour, :minute, :second).fetch(:minute)
     end
 
     # Get the hour of the WallClock.
     # @param [Symbol] system The houring system to use (either `:twelve_hour` or `:twenty_four_hour`; default `:twenty_four_hour`)
     # @return [Integer] The hour component of the WallClock
     def hour(system = :twenty_four_hour)
-      hour = self.to_duration.hours
+      hour = self.to_duration.to_units(:hour, :minute, :second).fetch(:hour)
       if system == :twelve_hour
         if hour == 0
           12
