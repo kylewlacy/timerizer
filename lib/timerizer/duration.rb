@@ -54,7 +54,7 @@ module Timerizer
           hours: 'h',
           days: 'd',
           weeks: 'w',
-          months: 'mn',
+          months: 'mo',
           years: 'y',
         },
         separator: '',
@@ -68,7 +68,7 @@ module Timerizer
           hours: 'hr',
           days: 'd',
           weeks: 'wk',
-          months: 'mn',
+          months: 'mo',
           years: 'yr',
           centuries: 'ct',
           millennia: 'ml'

@@ -173,7 +173,7 @@ RSpec.describe Timerizer::Duration do
 
       expect(
         (1.year 3.months 4.days).to_s(:short)
-      ).to eq("1yr 3mn")
+      ).to eq("1yr 3mo")
     end
 
     it "converts units using a user-defined syntax" do
