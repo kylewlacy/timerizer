@@ -255,12 +255,6 @@ module Timerizer
       self.after(Time.now)
     end
 
-    UNIT_ALIASES.each do |unit_name, _|
-      define_method("to_#{unit_name}") do
-        self.to_unit(unit_name)
-      end
-    end
-
     # Convert the duration to a given unit.
     #
     # @param [Symbol] unit The unit to convert to. See {UNIT_ALIASES} for a list
@@ -725,5 +719,48 @@ module Timerizer
         Date.new(new_year, new_month, -1)
       end
     end
+
+    # @!macro [attach] define_to_unit
+    #   @method to_$1
+    #
+    #   Convert the duration to the given unit. This is a helper that
+    #   is equivalent to calling {#to_unit} with `:$1`.
+    #
+    #   @return [Integer] the quantity of the unit in the duration.
+    #
+    #   @see #to_unit
+    def self.define_to_unit(unit)
+      define_method("to_#{unit}") do
+        self.to_unit(unit)
+      end
+    end
+
+    public
+
+    # NOTE: We need to manually spell out each unit with `define_to_unit` to
+    # get proper documentation for each method. To ensure that we don't miss
+    # any units, there's a test in `duration_spec.rb` to ensure each of these
+    # methods actually exist.
+
+    self.define_to_unit(:seconds)
+    self.define_to_unit(:minutes)
+    self.define_to_unit(:hours)
+    self.define_to_unit(:days)
+    self.define_to_unit(:weeks)
+    self.define_to_unit(:months)
+    self.define_to_unit(:years)
+    self.define_to_unit(:decades)
+    self.define_to_unit(:centuries)
+    self.define_to_unit(:millennia)
+    self.define_to_unit(:second)
+    self.define_to_unit(:minute)
+    self.define_to_unit(:hour)
+    self.define_to_unit(:day)
+    self.define_to_unit(:week)
+    self.define_to_unit(:month)
+    self.define_to_unit(:year)
+    self.define_to_unit(:decade)
+    self.define_to_unit(:century)
+    self.define_to_unit(:millennium)
   end
 end

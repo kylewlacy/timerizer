@@ -176,15 +176,60 @@ end
 #   # => 5 minutes
 # @see Timerizer::Duration::UNITS
 class Integer
-  Timerizer::Duration::UNIT_ALIASES.each do |unit_name, _|
-    define_method(unit_name) do |added_duration = nil|
-      duration = Timerizer::Duration.new(unit_name => self)
+  private
 
-      if added_duration.nil?
+  # @!macro [attach] _define_duration_unit
+  #   @method $1(other = nil)
+  #
+  #   Return a {Timerizer::Duration} with `self` of the given unit. This
+  #   method is a helper that is equivalent to
+  #   `Timerizer::Duration::new($1: self)`.
+  #
+  #   @param [Timerizer::Duration, nil] other Another duration to add to the
+  #     resulting duration, if present. This argument allows "chaining" multiple
+  #     durations together, to combine multiple units succiently.
+  #
+  #   @return [Timerizer::Duration] the quantity of the unit in the duration.
+  #
+  #   @see Timerizer::Duration#initialize
+  #
+  #   @example
+  #     n.$1 == Timerizer::Duration.new($1: n)
+  #     5.minutes == Timerizer::Duration.new(minutes: 5)
+  #     (1.week 1.day) == 8.days # "Chaining" multiple units
+  #     (n.$1 x.minutes) == (n.$1 + x.minutes)
+  def self._define_duration_unit(unit)
+    define_method(unit) do |other = nil|
+      duration = Timerizer::Duration.new(unit => self)
+
+      if other.nil?
         duration
       else
-        duration + added_duration
+        duration + other
       end
     end
   end
+
+  public
+
+  self._define_duration_unit(:seconds)
+  self._define_duration_unit(:minutes)
+  self._define_duration_unit(:hours)
+  self._define_duration_unit(:days)
+  self._define_duration_unit(:weeks)
+  self._define_duration_unit(:months)
+  self._define_duration_unit(:years)
+  self._define_duration_unit(:decades)
+  self._define_duration_unit(:centuries)
+  self._define_duration_unit(:millennia)
+  self._define_duration_unit(:second)
+  self._define_duration_unit(:minute)
+  self._define_duration_unit(:hour)
+  self._define_duration_unit(:day)
+  self._define_duration_unit(:week)
+  self._define_duration_unit(:month)
+  self._define_duration_unit(:year)
+  self._define_duration_unit(:decade)
+  self._define_duration_unit(:century)
+  self._define_duration_unit(:millennium)
 end
