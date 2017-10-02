@@ -160,7 +160,7 @@ RSpec.describe Timerizer::Duration do
       expect((365 + 30 + 1).days.to_s).to eq("1 year, 1 month, 1 day")
     end
 
-    it "converts units into a micro syntax" do
+    it "converts units into a micro format" do
       expect(
         (1.hour 3.minutes 4.seconds).to_s(:micro)
       ).to eq("1h")
@@ -170,7 +170,7 @@ RSpec.describe Timerizer::Duration do
       ).to eq("1y")
     end
 
-    it "converts units into a medium syntax" do
+    it "converts units into a medium format" do
       expect(
         (1.hour 3.minutes 4.seconds).to_s(:short)
       ).to eq("1hr 3min")
@@ -180,7 +180,7 @@ RSpec.describe Timerizer::Duration do
       ).to eq("1yr 3mo")
     end
 
-    it "converts units using a user-defined syntax" do
+    it "converts units using a user-defined format" do
       expect(
         (1.hour 3.minutes 4.seconds).to_s(
           units: {
@@ -194,7 +194,7 @@ RSpec.describe Timerizer::Duration do
       ).to eq("1 hour(s) / 3 minute(s) / 4 second(s)")
     end
 
-    it "uses user-defined options to override a default syntax" do
+    it "uses user-defined options to override default format options" do
       expect(8.days.to_s(separator: "_")).to eq("1_week, 1_day")
       expect(8.days.to_s(separator: "_", delimiter: " ")).to eq("1_week 1_day")
       expect(8.days.to_s(:micro, count: :all)).to eq("1w 1d")

@@ -46,7 +46,7 @@ module Timerizer
     }
 
     # Default syntax formats that can be used with {#to_s}.
-    SYNTAXES = {
+    FORMATS = {
       micro: {
         units: {
           seconds: 's',
@@ -351,35 +351,35 @@ module Timerizer
 
     # Convert a {Duration} to a human-readable format.
     def to_s(format = :long, options = nil)
-      syntax =
+      format =
         case format
         when Symbol
-          SYNTAXES.fetch(format)
+          FORMATS.fetch(format)
         when Hash
-          SYNTAXES.fetch(:long).merge(format)
+          FORMATS.fetch(:long).merge(format)
         else
           raise ArgumentError, "Expected #{format.inspect} to be a Symbol or Hash"
         end
 
-      syntax = syntax.merge(options || {})
+      format = format.merge(options || {})
 
       count =
-        if syntax[:count].nil? || syntax[:count] == :all
+        if format[:count].nil? || format[:count] == :all
           UNITS.count
         else
-          syntax[:count]
+          format[:count]
         end
 
-      syntax_units = syntax.fetch(:units)
-      units = self.to_units(*syntax_units.keys).select {|unit, n| n > 0}
+      format_units = format.fetch(:units)
+      units = self.to_units(*format_units.keys).select {|unit, n| n > 0}
       if units.empty?
         units = {seconds: 0}
       end
 
-      separator = syntax[:separator] || ' '
-      delimiter = syntax[:delimiter] || ', '
+      separator = format[:separator] || ' '
+      delimiter = format[:delimiter] || ', '
       units.take(count).map do |unit, n|
-        unit_label = syntax_units.fetch(unit)
+        unit_label = format_units.fetch(unit)
 
         singular, plural =
           case unit_label
@@ -397,7 +397,7 @@ module Timerizer
             end
 
           [n, unit_name].join(separator)
-      end.join(syntax[:delimiter] || ', ')
+      end.join(format[:delimiter] || ', ')
     end
 
     private
