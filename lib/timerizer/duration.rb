@@ -43,40 +43,6 @@ module Timerizer
       }
     }
 
-    @@units = {
-      second: :seconds,
-      minute: :minutes,
-      hour: :hours,
-      day: :days,
-      week: :weeks,
-      month: :months,
-      year: :years,
-      decade: :decades,
-      century: :centuries,
-      millennium: :millennia
-    }
-
-    @@in_seconds = {
-      second: 1,
-      minute: 60,
-      hour: 3600,
-      day: 86400,
-      week: 604800
-    }
-
-    @@in_months = {
-      month: 1,
-      year: 12,
-      decade: 120,
-      century: 1200,
-      millennium: 12000
-    }
-
-    @@average_seconds = {
-      month: 2629746,
-      year: 31556952
-    }
-
     # Default syntax formats that can be used with {#to_s}.
     SYNTAXES = {
       micro: {
@@ -123,21 +89,6 @@ module Timerizer
         }
       }
     }
-
-    # All potential units. Key is the unit name, and the value is its plural form.
-    def self.units
-      @@units
-    end
-
-    # Unit values in seconds. If a unit is not present in this hash, it is assumed to be in the {@@in_months} hash.
-    def self.units_in_seconds
-      @@in_seconds
-    end
-
-    # Unit values in months. If a unit is not present in this hash, it is assumed to be in the {@@in_seconds} hash.
-    def self.units_in_months
-      @@in_months
-    end
 
     # Initialize a new instance of {Duration}.
     def initialize(units = {})
