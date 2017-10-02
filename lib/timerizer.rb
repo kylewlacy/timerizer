@@ -1,6 +1,5 @@
 require "date"
-require_relative "./timerizer/duration"
-require_relative "./timerizer/wall_clock"
+require_relative "./timerizer/core"
 
 # {Time} class monkey-patched with {Timerizer::Duration} support.
 class Time
