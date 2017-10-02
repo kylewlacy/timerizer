@@ -381,7 +381,7 @@ module Timerizer
       syntax = syntax.merge(options || {})
 
       if syntax[:count].nil? || syntax[:count] == :all
-        count = @@units.count
+        count = UNITS.count
       else
         count = syntax[:count]
       end
