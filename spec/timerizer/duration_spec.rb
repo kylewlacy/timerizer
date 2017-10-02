@@ -362,14 +362,6 @@ RSpec.describe Timerizer::Duration do
     end
   end
 
-  describe "#-@" do
-    it "negates the `Duration`" do
-      expect(-(10.seconds)).to eq((-10).seconds)
-      expect(-(10.years)).to eq((-10).years)
-      expect(-(10.years 10.seconds)).to eq((-10).seconds - 10.years)
-    end
-  end
-
   describe "#normalize" do
     it "approxmiates month-based units as second-based units" do
       expect(1.month.normalize.get(:seconds)).to eq(30 * 24 * 60 * 60)
@@ -475,6 +467,51 @@ RSpec.describe Timerizer::Duration do
       expect(
         367.days.denormalize(method: :maximum).to_units(:years, :days)
       ).to eq(years: 1, days: 1)
+    end
+  end
+
+  describe "#-@" do
+    it "negates the `Duration`" do
+      expect(-(10.seconds)).to eq((-10).seconds)
+      expect(-(10.years)).to eq((-10).years)
+      expect(-(10.years 10.seconds)).to eq((-10).seconds - 10.years)
+    end
+  end
+
+  describe "#+" do
+    it "can add together durations" do
+      expect(1.day + 2.weeks).to eq(15.days)
+
+      expect(
+        (1.day + 1.month).to_units(:days, :months)
+      ).to eq(days: 1, months: 1)
+    end
+
+    it "can add a time to a duration" do
+      expect(1.day + Time.new(2000, 1, 1)).to eq(Time.new(2000, 1, 2))
+      expect(1.day + 1.month + Time.new(2000, 1, 1)).to eq(Time.new(2000, 2, 2))
+    end
+
+    it "can add zero to a duration" do
+      expect(1.day + 0).to eq(1.day)
+      expect(1.month + 0).to eq(1.month)
+      expect(1.day + 1.month + 0).to eq(1.day 1.month)
+    end
+  end
+
+  describe "#-" do
+    it "can find the difference between two durations" do
+      expect(2.weeks - 1.day).to eq(13.days)
+
+      expect(
+        (1.month - 1.day).to_units(:days, :months)
+      ).to eq(days: -1, months: 1)
+    end
+
+    it "can subtract zero from a duration" do
+      expect(1.day - 0).to eq(1.day)
+      expect(1.month - 0).to eq(1.month)
+      expect(1.day + 1.month - 0).to eq(1.day 1.month)
     end
   end
 

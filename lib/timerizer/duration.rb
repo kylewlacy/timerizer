@@ -286,23 +286,37 @@ module Timerizer
     # Add two {Duration}s together.
     #
     # @raise ArgumentError Argument isn't a {Duration}.
-    def +(time)
-      raise ArgumentError unless time.is_a?(Duration)
-      Duration.new(
-        seconds: @seconds + time.get(:seconds),
-        months: @months + time.get(:months)
-      )
+    def +(other)
+      case other
+      when 0
+        self
+      when Duration
+        Duration.new(
+          seconds: @seconds + other.get(:seconds),
+          months: @months + other.get(:months)
+        )
+      when Time
+        self.after(other)
+      else
+        raise ArgumentError, "Cannot add #{other.inspect} to Duration #{self}"
+      end
     end
 
     # Find the difference between two {Duration}s.
     #
     # @raise ArgumentError Argument isn't a {Duration}.
-    def -(time)
-      raise ArgumentError unless time.is_a?(Duration)
-      Duration.new(
-        seconds: @seconds - time.get(:seconds),
-        months: @months - time.get(:months)
-      )
+    def -(other)
+      case other
+      when 0
+        self
+      when Duration
+        Duration.new(
+          seconds: @seconds - other.get(:seconds),
+          months: @months - other.get(:months)
+        )
+      else
+        raise ArgumentError, "Cannot subtract #{other.inspect} from Duration #{self}"
+      end
     end
 
     # Converts the {Duration} to a {WallClock}.
