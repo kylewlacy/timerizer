@@ -515,6 +515,22 @@ RSpec.describe Timerizer::Duration do
     end
   end
 
+  describe "#*" do
+    it "can multiply a duration by a scalar" do
+      expect(1.day * 4).to eq(4.days)
+      expect((1.day 1.month) * 4).to eq(4.days 4.months)
+      expect((1.day 1.month) * 0).to eq(0.seconds)
+    end
+  end
+
+  describe "#/" do
+    it "can divide a duration by a scalar" do
+      expect(4.days / 2).to eq(2.days)
+      expect((8.days 8.months) / 2).to eq(4.days 4.months)
+      expect(1.second / 2).to eq(0.seconds)
+    end
+  end
+
   it "can be compared against other `Duration`s" do
     expect(1.minute).to eq(1.minute)
     expect(1.minute).not_to eq(1.hour)

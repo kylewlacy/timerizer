@@ -319,6 +319,30 @@ module Timerizer
       end
     end
 
+    def *(other)
+      case other
+      when Integer
+        Duration.new(
+          seconds: @seconds * other,
+          months: @months * other
+        )
+      else
+        raise ArgumentError, "Cannot multiply Duration #{self} by #{other.inspect}"
+      end
+    end
+
+    def /(other)
+      case other
+      when Integer
+        Duration.new(
+          seconds: @seconds / other,
+          months: @months / other
+        )
+      else
+        raise ArgumentError, "Cannot divide Duration #{self} by #{other.inspect}"
+      end
+    end
+
     # Converts the {Duration} to a {WallClock}.
     #
     # @return [WallClock] `self` as a {WallClock}
