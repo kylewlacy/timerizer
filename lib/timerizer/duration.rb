@@ -253,30 +253,9 @@ module Timerizer
       self.after(Time.now)
     end
 
-    @@units.each do |unit, plural|
-      in_method = "in_#{plural}"
-      count_method = plural
-      superior_unit = @@units.keys.index(unit) + 1
-
-      if @@in_seconds.has_key?(unit)
-        define_method(in_method) do
-          self.normalize.get(:seconds) / @@in_seconds[unit]
-        end
-      elsif @@in_months.has_key?(unit)
-        define_method(in_method) do
-          self.denormalize.get(:months) / @@in_months[unit]
-        end
-      end
-
-      in_superior = "in_#{@@units.values[superior_unit]}"
-      count_superior = @@units.keys[superior_unit]
-
-      define_method(count_method) do
-        time = self.send(in_method)
-        if @@units.length > superior_unit
-          time -= self.send(in_superior).send(count_superior).send(in_method)
-        end
-        time
+    UNIT_ALIASES.each do |unit_name, _|
+      define_method("to_#{unit_name}") do
+        self.to_unit(unit_name)
       end
     end
 
