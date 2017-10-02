@@ -2,6 +2,8 @@
 # '5 years, 4 hours, 3 minutes, 2 seconds' are all durations conceptually.
 module Timerizer
   class Duration
+    include Comparable
+
     UNITS = {
       seconds: {seconds: 1},
       minutes: {seconds: 60},
@@ -99,19 +101,6 @@ module Timerizer
         unit_info = self.class.resolve_unit(unit)
         @seconds += n * unit_info.fetch(:seconds, 0)
         @months += n * unit_info.fetch(:months, 0)
-      end
-    end
-
-    # Compares two {Duration}s to determine if they are equal
-    # @param [Duration] time The {Duration} to compare to.
-    # @return [Boolean] True if both {Duration}s are equal
-    # @note This method compares both {Duration}s' base units, so consider
-    #   normalizing if needed.
-    def ==(time)
-      if time.is_a?(Duration)
-        @seconds == time.get(:seconds) && @months == time.get(:months)
-      else
-        false
       end
     end
 
@@ -277,6 +266,15 @@ module Timerizer
 
       denormalized, remainder = result
       denormalized + remainder
+    end
+
+    def <=>(other)
+      case other
+      when Duration
+        self.to_unit(:seconds) <=> other.to_unit(:seconds)
+      else
+        nil
+      end
     end
 
     def -@

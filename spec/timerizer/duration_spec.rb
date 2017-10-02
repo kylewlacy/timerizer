@@ -532,11 +532,21 @@ RSpec.describe Timerizer::Duration do
   end
 
   it "can be compared against other `Duration`s" do
+    expect(1.second).not_to eq(1)
+
+    expect(1.second).to eq(1.second)
     expect(1.minute).to eq(1.minute)
-    expect(1.minute).not_to eq(1.hour)
+    expect(1.minute).to be < 1.hour
 
     expect(1.minute).to eq(60.seconds)
     expect(1.week).to eq(7.days)
     expect(12.months).to eq(1.year)
+    expect(13.months).to be > 1.year
+
+    expect(1.month).to eq(30.days)
+    expect(30.days).to eq(1.month)
+
+    expect(365.days).to eq(1.year)
+    expect(366.days).to be > 1.year
   end
 end
