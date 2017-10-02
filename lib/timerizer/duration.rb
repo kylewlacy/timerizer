@@ -69,9 +69,7 @@ module Timerizer
           days: 'd',
           weeks: 'wk',
           months: 'mo',
-          years: 'yr',
-          centuries: 'ct',
-          millennia: 'ml'
+          years: 'yr'
         },
         separator: '',
         delimiter: ' ',
@@ -85,9 +83,7 @@ module Timerizer
           days: ['day', 'days'],
           weeks: ['week', 'weeks'],
           months: ['month', 'months'],
-          years: ['year', 'years'],
-          centuries: ['century', 'centuries'],
-          millennia: ['millenium', 'millennia'],
+          years: ['year', 'years']
         }
       }
     }

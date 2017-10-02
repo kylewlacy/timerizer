@@ -145,6 +145,10 @@ RSpec.describe Timerizer::Duration do
         (1.year 3.months 4.days).to_s(:long)
       ).to eq("1 year, 3 months, 4 days")
 
+      expect(
+        (1000.years).to_s(:long)
+      ).to eq("1000 years")
+
       expect(0.seconds.to_s).to eq("0 seconds")
       expect(0.minutes.to_s).to eq("0 seconds")
       expect(0.months.to_s).to eq("0 seconds")
