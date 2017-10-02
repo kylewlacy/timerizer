@@ -339,6 +339,9 @@ module Timerizer
 
       syntax_units = syntax.fetch(:units)
       units = self.to_units(*syntax_units.keys).select {|unit, n| n > 0}
+      if units.empty?
+        units = {seconds: 0}
+      end
 
       separator = syntax[:separator] || ' '
       delimiter = syntax[:delimiter] || ', '

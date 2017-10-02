@@ -144,6 +144,11 @@ RSpec.describe Timerizer::Duration do
       expect(
         (1.year 3.months 4.days).to_s(:long)
       ).to eq("1 year, 3 months, 4 days")
+
+      expect(0.seconds.to_s).to eq("0 seconds")
+      expect(0.minutes.to_s).to eq("0 seconds")
+      expect(0.months.to_s).to eq("0 seconds")
+      expect(0.years.to_s).to eq("0 seconds")
     end
 
     it "converts units into a micro syntax" do
