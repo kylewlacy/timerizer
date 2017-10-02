@@ -2,7 +2,7 @@ require "date"
 require_relative "./timerizer/duration"
 require_relative "./timerizer/wall_clock"
 
-# {Time} class monkey-patched with {Duration} support.
+# {Time} class monkey-patched with {Timerizer::Duration} support.
 class Time
   # Represents an error where two times were expected to be in the future, but were in the past.
   # @see #until
@@ -114,8 +114,8 @@ class Time
     self
   end
 
-  # Converts {Time} to {WallClock}
-  # @return [WallClock] {Time} as {WallClock}
+  # Converts {Time} to {Timerizer::WallClock}
+  # @return [Timerizer::WallClock] {Time} as {Timerizer::WallClock}
   # @example
   #   time = Time.now.to_wall
   #   Date.tomorrow.at(time)
@@ -126,7 +126,7 @@ class Time
   end
 end
 
-# {Date} class monkey-patched with {Duration} helpers.
+# {Date} class monkey-patched with {Timerizer::Duration} helpers.
 class Date
   # Return the number of days in a given month.
   # @return [Integer] Number of days in the month of the {Date}.
@@ -170,11 +170,11 @@ class Date
   end
 end
 
-# Monkey-patched {Integer} class enabled to return {Duration} objects.
+# Monkey-patched {Integer} class enabled to return {Timerizer::Duration}s.
 # @example
 #   5.minutes
 #   # => 5 minutes
-# @see Duration#UNITS
+# @see Timerizer::Duration::UNITS
 class Integer
   Timerizer::Duration::UNIT_ALIASES.each do |unit_name, _|
     define_method(unit_name) do |added_duration = nil|
