@@ -57,11 +57,9 @@ module Timerizer
       end
 
       @seconds =
-        Duration.units_in_seconds.fetch(:hour) * hour +
-        Duration.units_in_seconds.fetch(:minute) * minute +
-        second
+        Duration.new(hour: hour, minute: minute, second: second).to_seconds
 
-      if @seconds >= Duration.units_in_seconds.fetch(:day)
+      if @seconds >= 1.day.to_seconds
         raise TimeOutOfBoundsError
       end
     end
@@ -111,13 +109,13 @@ module Timerizer
     # Get the time of the WallClock, in minutes
     # @return [Integer] The total time of the WallClock, in minutes
     def in_minutes
-      @seconds / Duration.units_in_seconds[:minute]
+      Duration::new(seconds: @seconds).to_minutes
     end
 
     # Get the time of the WallClock, in hours
     # @return [Integer] The total time of the WallClock, in hours
     def in_hours
-      @seconds / Duration.units_in_seconds[:hour]
+      Duration::new(seconds: @seconds).to_hours
     end
 
     # Get the second of the WallClock.
