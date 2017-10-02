@@ -244,6 +244,13 @@ RSpec.describe Timerizer::Duration do
       expect((3.days 2.seconds).to_minutes).to eq(3 * 24 * 60)
       expect((367.days).to_years).to eq(1)
     end
+
+    it "defines conversions for all units" do
+      Timerizer::Duration::UNIT_ALIASES.each do |unit_name, _|
+        duration = Timerizer::Duration::new(unit_name => 1)
+        expect(duration.send("to_#{unit_name}")).to eq(1)
+      end
+    end
   end
 
   describe "#to_unit" do

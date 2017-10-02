@@ -68,7 +68,7 @@ RSpec.describe Date do
 end
 
 RSpec.describe Integer do
-  it "makes Duration objects" do
+  it "creates `Duration`s" do
     expect(1.minute.get(:seconds)).to eq(60)
     expect(3.hours.get(:seconds)).to eq(10800)
     expect(5.days.get(:seconds)).to eq(432000)
@@ -77,5 +77,12 @@ RSpec.describe Integer do
     duration = 1.second 2.minutes 3.hours 4.days 5.weeks 6.months 7.years
     expect(duration.get(:seconds)).to eq(3380521)
     expect(duration.get(:months)).to eq(90)
+  end
+
+  it "defines helpers for all units" do
+    Timerizer::Duration::UNIT_ALIASES.each do |unit_name, _|
+      duration = 1.send(unit_name)
+      expect(duration).to eq(Timerizer::Duration.new(unit_name => 1))
+    end
   end
 end
