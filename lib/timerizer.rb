@@ -173,16 +173,18 @@ end
 # Monkey-patched {Integer} class enabled to return {Duration} objects.
 # @example
 #   5.minutes
-#     => 5 minutes
-# @see Duration#units
+#   # => 5 minutes
+# @see Duration#UNITS
 class Integer
-  Timerizer::Duration.units.each do |unit, plural|
-    class_eval "
-      def #{unit}(added_time = Timerizer::Duration.new)
-        time = Timerizer::Duration.new(:#{unit} => self)
-        time + added_time unless added_time.nil?
+  Timerizer::Duration::UNIT_ALIASES.each do |unit_name, _|
+    define_method(unit_name) do |added_duration = nil|
+      duration = Timerizer::Duration.new(unit_name => self)
+
+      if added_duration.nil?
+        duration
+      else
+        duration + added_duration
       end
-    "
-    alias_method(plural, unit)
+    end
   end
 end
