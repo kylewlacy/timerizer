@@ -151,6 +151,11 @@ RSpec.describe Timerizer::Duration do
       expect(0.years.to_s).to eq("0 seconds")
     end
 
+    it "normalizes the string by default" do
+      expect(30.days.to_s).to eq("1 month")
+      expect((365 + 30 + 1).days.to_s).to eq("1 year, 1 month, 1 day")
+    end
+
     it "converts units into a micro syntax" do
       expect(
         (1.hour 3.minutes 4.seconds).to_s(:micro)
@@ -183,6 +188,12 @@ RSpec.describe Timerizer::Duration do
           delimiter: ' / '
         )
       ).to eq("1 hour(s) / 3 minute(s) / 4 second(s)")
+    end
+
+    it "uses user-defined options to override a default syntax" do
+      expect(8.days.to_s(separator: "_")).to eq("1_week, 1_day")
+      expect(8.days.to_s(separator: "_", delimiter: " ")).to eq("1_week 1_day")
+      expect(8.days.to_s(:micro, count: :all)).to eq("1w 1d")
     end
   end
 

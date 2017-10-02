@@ -324,18 +324,19 @@ module Timerizer
         when Symbol
           SYNTAXES.fetch(format)
         when Hash
-          format
+          SYNTAXES.fetch(:long).merge(format)
         else
           raise ArgumentError, "Expected #{format.inspect} to be a Symbol or Hash"
         end
 
       syntax = syntax.merge(options || {})
 
-      if syntax[:count].nil? || syntax[:count] == :all
-        count = UNITS.count
-      else
-        count = syntax[:count]
-      end
+      count =
+        if syntax[:count].nil? || syntax[:count] == :all
+          UNITS.count
+        else
+          syntax[:count]
+        end
 
       syntax_units = syntax.fetch(:units)
       units = self.to_units(*syntax_units.keys).select {|unit, n| n > 0}
