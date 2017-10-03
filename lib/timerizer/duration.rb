@@ -188,7 +188,7 @@ module Timerizer
     #
     # @example 5 minutes before January 1st, 2000 at noon
     #   5.minutes.before(Time.new(2000, 1, 1, 12, 00, 00))
-    #   # => 1999-12-31 11:55:00 -0800
+    #   # => 2000-01-01 11:55:00 -0800
     #
     # @see #ago
     # @see #after
