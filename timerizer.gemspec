@@ -8,7 +8,13 @@ Gem::Specification.new do |gem|
   gem.description = "A simple set of Rails-like time helpers"
   gem.authors = ["Kyle Lacy"]
   gem.email = ["kylelacy@me.com"]
-  gem.files = ["lib/timerizer.rb", "lib/timerizer/version.rb"]
+  gem.files = [
+    "lib/timerizer.rb",
+    "lib/timerizer/core.rb",
+    "lib/timerizer/duration.rb",
+    "lib/timerizer/wall_clock.rb",
+    "lib/timerizer/version.rb"
+  ]
   gem.homepage = "http://github.com/kylewlacy/timerizer"
 
   gem.add_development_dependency "bundler", "~> 1.14"
