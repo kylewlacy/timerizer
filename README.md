@@ -64,7 +64,7 @@ $ gem install timerizer
 
 To build and install Timerizer yourself, do the following:
 
-``
+```
 $ git clone git://github.com/kylewlacy/timerizer.git
 $ cd timerizer
 $ rake build
