@@ -135,6 +135,17 @@ module Timerizer
           months: ['month', 'months'],
           years: ['year', 'years']
         }
+      },
+      min_long: {
+        units: {
+          seconds: ['second', 'seconds'],
+          minutes: ['minute', 'minutes'],
+          hours: ['hour', 'hours'],
+          days: ['day', 'days'],
+          months: ['month', 'months'],
+          years: ['year', 'years']
+        },
+        count: 2
       }
     }
 
@@ -642,6 +653,74 @@ module Timerizer
       end.join(format[:delimiter] || ', ')
     end
 
+    # Convert a Duration to a human-readable string using a rounded value.
+    #
+    # By 'rounded', we mean that the resulting value is rounded up if the input
+    # includes a value of more than half of one of the least-significant unit to
+    # be returned. For example, `(17.hours 43.minutes 31.seconds)`, when rounded
+    # to two units (hours and minutes), would return "17 hours, 44 minutes". By
+    # contrast, `#to_s`, with a `:count` option of 2, would return a value of
+    # "17 hours, 43 minutes": truncating, rather than rounding.
+    #
+    # Note that this method overloads the meaning of the `:count` option value
+    # as documented below. If the passed-in option value is numeric, it will be
+    # honored, and rounding will take place to that number of units. If the
+    # value is either `:all` or the default `nil`, then _rounding_ will be done
+    # to two units, and the rounded value will be passed on to `#to_s` with the
+    # options specified (which will result in a maximum of two time units being
+    # output).
+    #
+    # @param [Symbol, Hash] format The format type to format the duration with.
+    #   `format` can either be a key from the {FORMATS} hash or a hash with
+    #   the same shape as `options`. The default is `:min_long`, which strongly
+    #   resembles `:long` with the omission of `:weeks` units and a default
+    #   `:count` of 2.
+    # @param [Hash, nil] options Additional options to use to override default
+    #   format options.
+    #
+    # @option options [Hash<Symbol, String>] :units The full list of unit names
+    #   to use. Keys are unit names (see {UNIT_ALIASES} for a full list) and
+    #   values are strings to use when converting that unit to a string. Values
+    #   can also be an array, where the first item of the array will be used
+    #   for singular unit names and the second item will be used for plural
+    #   unit names. Note that this option will completely override the input
+    #   formats' list of names, so all units that should be used must be
+    #   specified!
+    # @option options [String] :separator The separator to use between a unit
+    #   quantity and the unit's name. For example, the string `"1 second"` uses
+    #   a separator of `" "`.
+    # @option options [String] :delimiter The delimiter to use between separate
+    #   units. For example, the string `"1 minute, 1 second"` uses a separator
+    #   of `", "`
+    # @option options [Integer, nil, :all] :count The number of significant
+    #   units to use in the string, or `nil` / `:all` to use all units.
+    #   For example, if the given duration is `1.day 1.week 1.month`, and
+    #   `options[:count]` is 2, then the resulting string will only include
+    #   the month and the week components of the string.
+    #
+    # @return [String] The rounded duration formatted as a string.
+    def to_rounded_s(format = :min_long, options = nil)
+      format =
+      case format
+      when Symbol
+        FORMATS.fetch(format)
+      when Hash
+        FORMATS.fetch(:long).merge(format)
+      else
+        raise ArgumentError, "Expected #{format.inspect} to be a Symbol or Hash"
+      end
+
+      format = format.merge(Hash(options))
+      places = format[:count]
+      begin
+        places = Integer(places) # raise if nil or `:all` supplied as value
+      rescue TypeError
+        places = 2
+      end
+      q = RoundedTime.call(self, places)
+      q.to_s(format, options)
+    end
+
     private
 
     # This method is like {#to_unit}, except it does not perform normalization
@@ -764,3 +843,5 @@ module Timerizer
     self.define_to_unit(:millennium)
   end
 end
+
+require_relative './duration/rounded_time'
