@@ -4,7 +4,7 @@
 
 ### Added
 
-- #8 (@jdickey): Added `Duration#to_rounded_s` to convert a duration to a human-readable string by rounding the duration first. This provides a more natural representation of a string.
+- [#8](https://github.com/kylewlacy/timerizer/pull/8) ([@jdickey](https://github.com/jdickey)): Added `Duration#to_rounded_s` to convert a duration to a human-readable string by rounding the duration first. This provides a more natural representation of a string.
     - The default format of `#to_rounded_s` is the new `:min_long` format, which is similar to the `:long` format except it excludes weeks.
 
 ## [0.3.0] - 2017-10-02
