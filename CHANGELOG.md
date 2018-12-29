@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.2] - 2018-12-28
+
+### Fixed
+
+- [#9](https://github.com/kylewlacy/timerizer/pull/9) ([@jdickey](https://github.com/jdickey)): Hotfix for issue preventing the library to load due to incorret gemspec configuration
+
 ## [0.3.1] - 2018-12-26
 
 ### Added
