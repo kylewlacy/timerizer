@@ -630,7 +630,6 @@ module Timerizer
       end
 
       separator = format[:separator] || ' '
-      delimiter = format[:delimiter] || ', '
       units.take(count).map do |unit, n|
         unit_label = format_units.fetch(unit)
 
