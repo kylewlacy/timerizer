@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3] - 2019-09-10
+
+### Changed
+
+- **Timerizer now only supports Ruby 2.4+**. While earlier Ruby versions may still work, Ruby 2.4 is the oldest release that is still receiving security updates. So, you should update if you haven't already!
+- [#10](https://github.com/kylewlacy/timerizer/pull/10) ([@muellerj](https://github.com/muellerj)): Fix warnings for Ruby 2.6 and update libraries
+
 ## [0.3.2] - 2018-12-28
 
 ### Fixed
