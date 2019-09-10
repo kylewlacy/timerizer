@@ -98,6 +98,7 @@ class Time
     Timerizer::Duration.new(seconds: time_between.round)
   end
 
+  undef_method :to_date
   # Convert {Time} to {Date}.
   # @return [Date] {Time} as {Date}
   # @example
@@ -107,6 +108,7 @@ class Time
     Date.new(self.year, self.month, self.day)
   end
 
+  undef_method :to_time
   # Convert self to {Time}.
   # @see Date#to_time
   def to_time
@@ -142,6 +144,7 @@ class Date
     number_of_days.fetch(self.month - 1)
   end
 
+  undef_method :to_date
   # Return self as {Date}.
   # @see Time#to_date
   def to_date

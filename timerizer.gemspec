@@ -11,8 +11,8 @@ Gem::Specification.new do |gem|
   gem.files = Dir.glob('lib/**/*.rb')
   gem.homepage = "http://github.com/kylewlacy/timerizer"
 
-  gem.add_development_dependency "bundler", "~> 1.14"
-  gem.add_development_dependency "rake", "~> 10.0"
-  gem.add_development_dependency "rspec", "~> 3.0"
-  gem.add_development_dependency "yard", "~> 0.9.9"
+  gem.add_development_dependency "bundler", "~> 2.0"
+  gem.add_development_dependency "rake", "~> 12.3"
+  gem.add_development_dependency "rspec", "~> 3.8"
+  gem.add_development_dependency "yard", "~> 0.9.20"
 end
